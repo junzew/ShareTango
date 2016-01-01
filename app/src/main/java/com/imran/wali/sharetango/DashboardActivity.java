@@ -1,10 +1,12 @@
 package com.imran.wali.sharetango;
 
+import android.content.Context;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,39 +17,75 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.imran.wali.sharetango.UI.Fragments.Tab1Fragment;
+
 import java.util.ArrayList;
 
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    /* Dashboard UI Variables */
+    private ViewPager viewPager;
+
+
+
+
+    /* Dashboard UI Support Variables */
+    private ScreenSlidePagerAdapter slidePagerAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        /* Init Toolbar */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        /* Init Drawer */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        /*Init Variables */
+        viewPager = (ViewPager) findViewById(R.id.dashboard_viewpager);
+        slidePagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(slidePagerAdapter);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.dashboard_viewpager_sliding_tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
     }
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter{
+        final int PAGE_COUNT = 3;
+        private String tabTitles[] = new String[] { "Tab1", "Tab2", "Tab3" };
+        private Context context;
+        private ArrayList<Fragment> fragmentList;
 
-        //private ArrayList<>
-        @Override
-        public Fragment getItem(int position) {
-            return null;
+        public ScreenSlidePagerAdapter(FragmentManager fm){
+            super(fm);
+            /* Adding All Fragments Here */
+
         }
 
         @Override
         public int getCount() {
-            return 0;
+            return PAGE_COUNT;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return Tab1Fragment.newInstance(position + 1);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            // Generate title based on item position
+            return tabTitles[position];
         }
     }
 
