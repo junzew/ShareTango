@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,7 +16,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.imran.wali.sharetango.UI.Fragments.Tab1Fragment;
+import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
+import com.imran.wali.sharetango.UI.Fragments.SongFragment;
 
 import java.util.ArrayList;
 
@@ -26,8 +26,6 @@ public class DashboardActivity extends AppCompatActivity
 
     /* Dashboard UI Variables */
     private ViewPager viewPager;
-
-
 
 
     /* Dashboard UI Support Variables */
@@ -61,26 +59,26 @@ public class DashboardActivity extends AppCompatActivity
     }
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter{
-        final int PAGE_COUNT = 3;
-        private String tabTitles[] = new String[] { "Tab1", "Tab2", "Tab3" };
+        final int PAGE_COUNT = 4;
+        private String tabTitles[] = new String[] { "S", "A", "G", "A"};
         private Context context;
         private ArrayList<Fragment> fragmentList;
 
         public ScreenSlidePagerAdapter(FragmentManager fm){
             super(fm);
+            fragmentList = new ArrayList<>();
             /* Adding All Fragments Here */
-
+            fragmentList.add(PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.SONG));
+            fragmentList.add(PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ARTIST));
+            fragmentList.add(PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.GENRE));
+            fragmentList.add(PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ALBUMS));
         }
 
         @Override
-        public int getCount() {
-            return PAGE_COUNT;
-        }
+        public int getCount() {return PAGE_COUNT;}
 
         @Override
-        public Fragment getItem(int position) {
-            return Tab1Fragment.newInstance(position + 1);
-        }
+        public Fragment getItem(int position) {return fragmentList.get(position);}
 
         @Override
         public CharSequence getPageTitle(int position) {
