@@ -9,6 +9,7 @@ import java.net.URI;
 
 /**
  * Created by Wali on 19-Jul-15.
+ * Edited by junzew
  */
 public class MusicData implements Parcelable{
 
