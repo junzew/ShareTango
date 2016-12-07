@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
  * Created by wali on 30/12/15.
  */
 
-public class PagerAdapterTabFragment extends Fragment {
+public abstract class PagerAdapterTabFragment extends Fragment {
 
     public enum PageType {
         SONG,

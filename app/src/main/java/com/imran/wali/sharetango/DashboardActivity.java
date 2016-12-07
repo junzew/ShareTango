@@ -1,21 +1,26 @@
 package com.imran.wali.sharetango;
 
 import android.content.Context;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.imran.wali.sharetango.UI.Fragments.AlbumFragment;
+import com.imran.wali.sharetango.UI.Fragments.ArtistFragment;
+import com.imran.wali.sharetango.UI.Fragments.GenreFragment;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
 import com.imran.wali.sharetango.UI.Fragments.SongFragment;
 
@@ -58,9 +63,15 @@ public class DashboardActivity extends AppCompatActivity
 
     }
 
+    private SongFragment mSongFragment = (SongFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.SONG);
+    private ArtistFragment mArtistFragment = (ArtistFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ARTIST);
+    private AlbumFragment mAlbumFragment = (AlbumFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ALBUMS);
+    private GenreFragment mGenreFragment = (GenreFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.GENRE);
+
+
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter{
         final int PAGE_COUNT = 4;
-        private String tabTitles[] = new String[] { "S", "A", "G", "A"};
+        private String tabTitles[] = new String[] { "Song", "Artist", "Genre", "Album"};
         private Context context;
         private ArrayList<Fragment> fragmentList;
 
@@ -68,10 +79,10 @@ public class DashboardActivity extends AppCompatActivity
             super(fm);
             fragmentList = new ArrayList<>();
             /* Adding All Fragments Here */
-            fragmentList.add(PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.SONG));
-            fragmentList.add(PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ARTIST));
-            fragmentList.add(PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.GENRE));
-            fragmentList.add(PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ALBUMS));
+            fragmentList.add(mSongFragment);
+            fragmentList.add(mArtistFragment);
+            fragmentList.add(mAlbumFragment);
+            fragmentList.add(mGenreFragment);
         }
 
         @Override
@@ -143,5 +154,23 @@ public class DashboardActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public static final int PERMISSION_REQUEST_READ_STORAGE = 0; // permission request code
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_READ_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mSongFragment.fetchSongs();
+                } else {
+                    Toast.makeText(DashboardActivity.this, "External storage access denied", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
     }
 }

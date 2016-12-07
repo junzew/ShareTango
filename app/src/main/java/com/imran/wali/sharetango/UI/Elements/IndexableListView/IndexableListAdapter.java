@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +14,12 @@ import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import com.imran.wali.sharetango.AudioManager.MusicData;
+import com.imran.wali.sharetango.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
-
-import com.imran.wali.sharetango.AudioManager.MusicData;
-import com.imran.wali.sharetango.DashboardActivity;
-import com.imran.wali.sharetango.R;
 
 /**
  * Created by Wali on 18-Jul-15.
@@ -181,10 +177,10 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
                     updateListFlag = true;
                     setDataFromCursor(resultCursor);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            catch (Exception e){}
             return null;
-
         }
 
         @Override
