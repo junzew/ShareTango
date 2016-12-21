@@ -1,7 +1,6 @@
 package com.imran.wali.sharetango;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -16,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.imran.wali.sharetango.UI.Fragments.AlbumFragment;
 import com.imran.wali.sharetango.UI.Fragments.ArtistFragment;
@@ -154,23 +152,5 @@ public class DashboardActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    public static final int PERMISSION_REQUEST_READ_STORAGE = 0; // permission request code
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_READ_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mSongFragment.fetchSongs();
-                } else {
-                    Toast.makeText(DashboardActivity.this, "External storage access denied", Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-        }
     }
 }
