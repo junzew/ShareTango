@@ -29,11 +29,19 @@
         android:marqueeRepeatLimit="marquee_forever"
         android:layout_below="@id/album" />
 
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/song_title"
+        android:id="@+id/progress"
+        android:layout_marginTop="10dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max="100" />
     <ImageView
         android:id="@+id/play_button"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_below="@id/song_title"
+        android:layout_below="@id/progress"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:src="@drawable/pause_button" />

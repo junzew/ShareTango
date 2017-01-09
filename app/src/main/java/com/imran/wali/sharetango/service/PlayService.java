@@ -78,6 +78,18 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     public void stop() {
         mMediaPlayer.stop();
     }
+    public int currentPosition() {
+        return mMediaPlayer.getCurrentPosition();
+    }
+    public int getDuration() {
+        return mMediaPlayer.getDuration();
+    }
+    public boolean isPlaying() {
+        return mMediaPlayer.isPlaying();
+    }
+    public void seekTo(int progress) {
+        mMediaPlayer.seekTo(progress);
+    }
 
     @Override
     public void onDestroy() {

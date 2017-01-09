@@ -10,12 +10,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.imran.wali.sharetango.R;
@@ -32,6 +36,8 @@ public class PlayActivity extends AppCompatActivity {
     ImageView mPlayImage;
     ImageView mAlbumArtImage;
     TextView mAlbumTitle;
+    SeekBar mSeekBar;
+    boolean isSeeking = false;
 
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -40,6 +46,7 @@ public class PlayActivity extends AppCompatActivity {
             PlayService.PlayBinder binder = (PlayService.PlayBinder) service;
             mService = (PlayService) binder.getService();
             mBound = true;
+            new DelayTask().execute();
         }
 
         @Override
@@ -47,6 +54,35 @@ public class PlayActivity extends AppCompatActivity {
             mBound = false;
         }
     };
+
+    public class DelayTask extends AsyncTask<Void, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            mSeekBar.setVisibility(ProgressBar.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            while (mBound && mService.currentPosition() < mService.getDuration()) {
+                if (!mService.isPlaying()) {
+                    SystemClock.sleep(500);
+                } else {
+                    int p = (int) ((double)mService.currentPosition()/ (double)mService.getDuration() * 100);
+                    if (!isSeeking) {
+                        publishProgress(p);
+                    }
+                }
+            }
+            return "Complete";
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            mSeekBar.setProgress(values[0]);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +102,29 @@ public class PlayActivity extends AppCompatActivity {
         mAlbumArtImage = (ImageView) findViewById(R.id.album);
         mPlayImage = (ImageView) findViewById(R.id.play_button);
         mAlbumTitle = (TextView) findViewById(R.id.song_title);
+        mSeekBar = (SeekBar) findViewById(R.id.progress);
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int mProgress = 0;
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser) {
+                    mProgress = progress;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                isSeeking = true;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mSeekBar.setProgress(mProgress);
+                isSeeking = false;
+                int position = (int) ((double) mProgress / 100 * mService.getDuration());
+                mService.seekTo(position);
+            }
+        });
         Intent i = getIntent();
         long albumId = i.getLongExtra("albumId", 0);
         Uri uri = ContentUris.withAppendedId(ARTWORK_URI, albumId);

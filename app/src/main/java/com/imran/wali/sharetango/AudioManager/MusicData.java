@@ -84,5 +84,9 @@ public class MusicData implements Parcelable{
         return Uri.parse(albumArtURIString);
     }
 
+    @Override
+    public String toString() {
+        return title;
+    }
 }
 

@@ -2,7 +2,6 @@ package com.imran.wali.sharetango.UI.Fragments;
 
 import android.Manifest;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -13,12 +12,11 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.imran.wali.sharetango.AudioManager.MusicData;
+import com.imran.wali.sharetango.AudioManager.PlaybackController;
 import com.imran.wali.sharetango.DashboardActivity;
 import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.IndexableListAdapter;
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.IndexableListView;
-import com.imran.wali.sharetango.UI.activity.PlayActivity;
-import com.imran.wali.sharetango.service.PlayService;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -89,16 +87,7 @@ public class SongFragment extends PagerAdapterTabFragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             MusicData song = adapter.getItem(position);
-
-            Intent intent = new Intent(getActivity(), PlayService.class);
-            intent.putExtra("id", song.getId());
-            getActivity().startService(intent);
-
-            Intent i = new Intent(getActivity(), PlayActivity.class);
-            i.putExtra("albumId", song.getAlbumId());
-            i.putExtra("title", song.getTitle());
-            startActivity(i);
-
+            PlaybackController.start(getActivity(), song);
         }
     };
 

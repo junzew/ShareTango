@@ -17,8 +17,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.imran.wali.sharetango.AudioManager.MusicData;
+import com.imran.wali.sharetango.AudioManager.PlaybackController;
 import com.imran.wali.sharetango.R;
 import com.squareup.picasso.Picasso;
 
@@ -32,7 +33,7 @@ public class AlbumActivity extends AppCompatActivity {
     TextView mAlbumName;
     ImageView mAlbumCover;
     ListView mListView;
-    ArrayAdapter<String> mAdapter;
+    ArrayAdapter<MusicData> mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +71,7 @@ public class AlbumActivity extends AppCompatActivity {
         protected Void doInBackground(Long... params) {
             ContentResolver musicResolver = getContentResolver();
             Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-            String[] columns = new String[]{MediaStore.Audio.Media.TITLE};
+            String[] columns = new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM_ID, MediaStore.Audio.Media._ID};
             String selection = MediaStore.Audio.Media.TITLE + " != '' AND " +
                     MediaStore.Audio.Media.IS_MUSIC + " = 1 " +
                     " AND " + MediaStore.Audio.Media.ALBUM_ID + "=" + params[0];
@@ -87,8 +88,14 @@ public class AlbumActivity extends AppCompatActivity {
             if (cursor != null && cursor.getCount() != 0) {
                 for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToPosition(i);
-                    String songTitle = cursor.getString(cursor.getColumnIndex("mAlbumTitle"));
-                    mAdapter.add(songTitle);
+                    String songTitle = cursor.getString(cursor.getColumnIndex("title"));
+                    long albumId = cursor.getLong(cursor.getColumnIndex("album_id"));
+                    long songId = cursor.getLong(cursor.getColumnIndex("_ID"));
+                    MusicData data = new MusicData();
+                    data.title = songTitle;
+                    data.id = songId;
+                    data.albumId = albumId;
+                    mAdapter.add(data);
                 }
             }
         }
@@ -100,7 +107,7 @@ public class AlbumActivity extends AppCompatActivity {
         }
     }
 
-    private class AlbumSongListAdapter extends ArrayAdapter<String> {
+    private class AlbumSongListAdapter extends ArrayAdapter<MusicData> {
 
         public AlbumSongListAdapter(Context context, int resource) {
             super(context, resource);
@@ -108,13 +115,14 @@ public class AlbumActivity extends AppCompatActivity {
 
         @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // start playing song
-                    Toast.makeText(AlbumActivity.this, "TODO: start playing song", Toast.LENGTH_SHORT).show();
+                    MusicData song = getItem(position);
+                    PlaybackController.start(AlbumActivity.this, song);
                 }
             });
             return view;
