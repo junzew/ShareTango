@@ -66,10 +66,9 @@ public class DashboardActivity extends AppCompatActivity
     private AlbumFragment mAlbumFragment = (AlbumFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ALBUMS);
     private GenreFragment mGenreFragment = (GenreFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.GENRE);
 
-
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter{
         final int PAGE_COUNT = 4;
-        private String tabTitles[] = new String[] { "Song", "Artist", "Genre", "Album"};
+        private String tabTitles[] = new String[] { "Song", "Artist", "Album", "Genre"};
         private Context context;
         private ArrayList<Fragment> fragmentList;
 
