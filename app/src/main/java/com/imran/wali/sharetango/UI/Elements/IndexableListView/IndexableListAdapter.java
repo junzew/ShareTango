@@ -57,6 +57,8 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
             int songId = resultCursor.getInt(resultCursor.getColumnIndex("_id"));
             musicData.albumArtURIString = "content://media/external/audio/media/" + songId + "/albumart";
             musicData.duration = " ";
+            musicData.id = songId;
+            musicData.albumId = resultCursor.getLong(resultCursor.getColumnIndex("album_id"));
             //duration
             return musicData;
         }
@@ -167,7 +169,8 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
                     MediaStore.Audio.Media.ARTIST,
                     MediaStore.Audio.Media.DURATION,
                     MediaStore.Audio.Media.DATA,
-                    MediaStore.Audio.Media._ID
+                    MediaStore.Audio.Media._ID,
+                    MediaStore.Audio.Media.ALBUM_ID
             };
             String selection = MediaStore.Audio.Media.TITLE + " != '' AND " +  MediaStore.Audio.Media.IS_MUSIC + "=1";
             try{

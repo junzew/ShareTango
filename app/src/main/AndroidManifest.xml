@@ -3,7 +3,7 @@
     package="com.imran.wali.sharetango">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <application
         android:name=".ShareTangoApplication"
         android:allowBackup="true"
@@ -21,7 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UI.activity.AlbumActivity"></activity>
+        <activity android:name=".UI.activity.AlbumActivity"/>
+        <activity android:name=".UI.activity.PlayActivity"/>
+        <service android:name=".service.PlayService"/>
     </application>
 
 </manifest>

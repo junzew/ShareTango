@@ -87,7 +87,7 @@ public class AlbumActivity extends AppCompatActivity {
             if (cursor != null && cursor.getCount() != 0) {
                 for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToPosition(i);
-                    String songTitle = cursor.getString(cursor.getColumnIndex("title"));
+                    String songTitle = cursor.getString(cursor.getColumnIndex("mAlbumTitle"));
                     mAdapter.add(songTitle);
                 }
             }

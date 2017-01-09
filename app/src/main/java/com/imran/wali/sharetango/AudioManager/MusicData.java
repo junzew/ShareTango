@@ -1,11 +1,8 @@
 package com.imran.wali.sharetango.AudioManager;
 
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.net.URI;
 
 /**
  * Created by Wali on 19-Jul-15.
@@ -18,6 +15,8 @@ public class MusicData implements Parcelable{
     public String path;
     public String albumArtURIString;
     public String duration;
+    public long id;
+    public long albumId;
 
     public MusicData() {};
 
@@ -28,6 +27,8 @@ public class MusicData implements Parcelable{
         dest.writeString(path);
         dest.writeString(albumArtURIString);
         dest.writeString(duration);
+        dest.writeLong(id);
+        dest.writeLong(albumId);
     }
 
     public MusicData(Parcel in){
@@ -36,6 +37,8 @@ public class MusicData implements Parcelable{
         path = in.readString();
         albumArtURIString = in.readString();
         duration = in.readString();
+        id = in.readLong();
+        albumId = in.readLong();
     }
 
     public String getArtist() {
@@ -48,6 +51,18 @@ public class MusicData implements Parcelable{
 
     public String getPath() {
         return path;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public long getAlbumId() {
+        return albumId;
+    }
+
+    public String getDuration() {
+        return duration;
     }
 
     @Override
