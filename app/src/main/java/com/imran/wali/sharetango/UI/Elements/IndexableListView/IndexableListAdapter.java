@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +14,12 @@ import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import com.imran.wali.sharetango.AudioManager.MusicData;
+import com.imran.wali.sharetango.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
-
-import com.imran.wali.sharetango.AudioManager.MusicData;
-import com.imran.wali.sharetango.DashboardActivity;
-import com.imran.wali.sharetango.R;
 
 /**
  * Created by Wali on 18-Jul-15.
@@ -61,6 +57,8 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
             int songId = resultCursor.getInt(resultCursor.getColumnIndex("_id"));
             musicData.albumArtURIString = "content://media/external/audio/media/" + songId + "/albumart";
             musicData.duration = " ";
+            musicData.id = songId;
+            musicData.albumId = resultCursor.getLong(resultCursor.getColumnIndex("album_id"));
             //duration
             return musicData;
         }
@@ -171,7 +169,8 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
                     MediaStore.Audio.Media.ARTIST,
                     MediaStore.Audio.Media.DURATION,
                     MediaStore.Audio.Media.DATA,
-                    MediaStore.Audio.Media._ID
+                    MediaStore.Audio.Media._ID,
+                    MediaStore.Audio.Media.ALBUM_ID
             };
             String selection = MediaStore.Audio.Media.TITLE + " != '' AND " +  MediaStore.Audio.Media.IS_MUSIC + "=1";
             try{
@@ -181,10 +180,10 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
                     updateListFlag = true;
                     setDataFromCursor(resultCursor);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            catch (Exception e){}
             return null;
-
         }
 
         @Override

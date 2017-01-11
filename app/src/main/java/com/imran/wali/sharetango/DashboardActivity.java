@@ -1,14 +1,14 @@
 package com.imran.wali.sharetango;
 
 import android.content.Context;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +16,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.imran.wali.sharetango.UI.Fragments.AlbumFragment;
+import com.imran.wali.sharetango.UI.Fragments.ArtistFragment;
+import com.imran.wali.sharetango.UI.Fragments.GenreFragment;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
 import com.imran.wali.sharetango.UI.Fragments.SongFragment;
 
@@ -58,9 +61,14 @@ public class DashboardActivity extends AppCompatActivity
 
     }
 
+    private SongFragment mSongFragment = (SongFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.SONG);
+    private ArtistFragment mArtistFragment = (ArtistFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ARTIST);
+    private AlbumFragment mAlbumFragment = (AlbumFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ALBUMS);
+    private GenreFragment mGenreFragment = (GenreFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.GENRE);
+
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter{
         final int PAGE_COUNT = 4;
-        private String tabTitles[] = new String[] { "S", "A", "G", "A"};
+        private String tabTitles[] = new String[] { "Song", "Artist", "Album", "Genre"};
         private Context context;
         private ArrayList<Fragment> fragmentList;
 
@@ -68,10 +76,10 @@ public class DashboardActivity extends AppCompatActivity
             super(fm);
             fragmentList = new ArrayList<>();
             /* Adding All Fragments Here */
-            fragmentList.add(PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.SONG));
-            fragmentList.add(PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ARTIST));
-            fragmentList.add(PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.GENRE));
-            fragmentList.add(PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ALBUMS));
+            fragmentList.add(mSongFragment);
+            fragmentList.add(mArtistFragment);
+            fragmentList.add(mAlbumFragment);
+            fragmentList.add(mGenreFragment);
         }
 
         @Override
