@@ -22,7 +22,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".UI.activity.AlbumActivity"/>
-        <activity android:name=".UI.activity.PlayActivity"/>
+        <activity android:name=".UI.activity.PlayActivity"
+            android:screenOrientation="portrait"/>
         <service android:name=".service.PlayService"/>
     </application>
 
