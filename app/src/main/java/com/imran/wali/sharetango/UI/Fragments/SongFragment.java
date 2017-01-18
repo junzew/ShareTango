@@ -87,7 +87,7 @@ public class SongFragment extends PagerAdapterTabFragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             MusicData song = adapter.getItem(position);
-            PlaybackController.start(getActivity(), song);
+            PlaybackController.getInstance().start(getActivity(), song);
         }
     };
 

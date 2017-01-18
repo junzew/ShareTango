@@ -88,5 +88,21 @@ public class MusicData implements Parcelable{
     public String toString() {
         return title;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MusicData)) return false;
+
+        MusicData musicData = (MusicData) o;
+
+        return id == musicData.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
+    }
 }
 

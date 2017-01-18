@@ -15,11 +15,13 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.imran.wali.sharetango.AudioManager.MusicData;
+import com.imran.wali.sharetango.AudioManager.PlaybackController;
 import com.imran.wali.sharetango.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Wali on 18-Jul-15.
@@ -32,8 +34,7 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
     private LayoutInflater inflater;
     private String[] mSections = {"#","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};//"#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-
-    ArrayList<MusicData> fillItUp;
+    private List<MusicData> mMusicDataList = new ArrayList<>();
 
     public IndexableListAdapter(Context context){
         mContext = context;
@@ -132,8 +133,8 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
         new GetSongsTask().execute();
     }
 
-    private void setDataFromCursor(Cursor rCursor){
-        resultCursor = rCursor;
+    private void setDataFromCursor(Cursor cursor){
+        resultCursor = cursor;
         indexerHashMap.clear();
         for (int i = 0; i < resultCursor.getCount(); i++) {
             resultCursor.moveToPosition(i);
@@ -151,7 +152,28 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
             if (!indexerHashMap.containsKey(musicTitleFirstLetter)) {
                 indexerHashMap.put(musicTitleFirstLetter, i);
             }
+        }
 
+        addToQueue(cursor);
+    }
+
+
+    private void addToQueue(Cursor cursor) {
+        if (cursor != null && cursor.getCount() != 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToPosition(i);
+                String songTitle = cursor.getString(cursor.getColumnIndex("title"));
+                long albumId = cursor.getLong(cursor.getColumnIndex("album_id"));
+                long songId = cursor.getLong(cursor.getColumnIndex("_ID"));
+                MusicData data = new MusicData();
+                data.title = songTitle;
+                data.id = songId;
+                data.albumId = albumId;
+                data.artist= resultCursor.getString(resultCursor.getColumnIndex("artist"));
+                data.path = resultCursor.getString(resultCursor.getColumnIndex("_data"));
+                mMusicDataList.add(data);
+                PlaybackController.getInstance().enqueue(data);
+            }
         }
     }
 
