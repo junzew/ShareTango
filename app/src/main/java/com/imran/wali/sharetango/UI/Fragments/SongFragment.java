@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.imran.wali.sharetango.AudioManager.MusicData;
 import com.imran.wali.sharetango.AudioManager.PlaybackController;
@@ -82,6 +83,12 @@ public class SongFragment extends PagerAdapterTabFragment implements PullToRefre
 
         pullToRefreshListView = (PullToRefreshIndexableListView) view.findViewById(R.id.pull_to_refresh_lv);
         pullToRefreshListView.setOnRefreshListener(this);
+        ILoadingLayout layout = pullToRefreshListView.getLoadingLayoutProxy();
+        // set header texts here
+//        layout.setPullLabel("1");
+//        layout.setLastUpdatedLabel("2");
+//        layout.setRefreshingLabel("3");
+//        layout.setReleaseLabel("4");
         listView = pullToRefreshListView.getRefreshableView();
 
         listView.setFastScrollEnabled(true); // must come before setting adapter
