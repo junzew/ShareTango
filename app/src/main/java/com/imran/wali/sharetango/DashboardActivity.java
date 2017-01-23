@@ -3,6 +3,7 @@ package com.imran.wali.sharetango;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -46,7 +47,7 @@ public class DashboardActivity extends AppCompatActivity
     BroadcastReceiver mReceiver;
     IntentFilter mIntentFilter;
     Future WifiMusicListProviderService;
-
+    WifiP2pManager.PeerListListener peerListListener;
     Timer timer;
     TimerTask timerTask;
 
@@ -85,7 +86,13 @@ public class DashboardActivity extends AppCompatActivity
         /* Init WIFI Direct */
         mWifiDirectManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         mChannel = mWifiDirectManager.initialize(this, getMainLooper(), null);
-        mReceiver = new WiFiDirectBroadcastReceiver(mWifiDirectManager, mChannel, this);
+        peerListListener = new WifiP2pManager.PeerListListener() {
+            @Override
+            public void onPeersAvailable(WifiP2pDeviceList wifiP2pDeviceList) {
+
+            }
+        };
+        mReceiver = new WiFiDirectBroadcastReceiver(mWifiDirectManager, mChannel, this, peerListListener);
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
