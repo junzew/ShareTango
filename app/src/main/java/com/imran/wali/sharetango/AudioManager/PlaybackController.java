@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.imran.wali.sharetango.UI.activity.PlayActivity;
-import com.imran.wali.sharetango.service.PlayService;
+import com.imran.wali.sharetango.Service.PlayService;
 
 /**
  * Created by junze on 2017-01-08.

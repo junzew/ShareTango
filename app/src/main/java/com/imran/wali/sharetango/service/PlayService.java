@@ -1,4 +1,4 @@
-package com.imran.wali.sharetango.service;
+package com.imran.wali.sharetango.Service;
 
 /**
  * Created by junze on 2017-01-08.
