@@ -15,9 +15,9 @@
                     "position": {
                         "startLine": 2,
                         "startColumn": 2,
-                        "startOffset": 55,
+                        "startOffset": 53,
                         "endColumn": 75,
-                        "endOffset": 128
+                        "endOffset": 126
                     }
                 }
             },
@@ -34,9 +34,9 @@
                     "position": {
                         "startLine": 4,
                         "startColumn": 2,
-                        "startOffset": 213,
+                        "startOffset": 209,
                         "endColumn": 68,
-                        "endOffset": 279
+                        "endOffset": 275
                     }
                 }
             },
@@ -53,9 +53,9 @@
                     "position": {
                         "startLine": 3,
                         "startColumn": 2,
-                        "startOffset": 132,
+                        "startOffset": 129,
                         "endColumn": 79,
-                        "endOffset": 209
+                        "endOffset": 206
                     }
                 }
             }
