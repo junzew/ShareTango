@@ -48,7 +48,10 @@ public class SongFragment extends PagerAdapterTabFragment implements PullToRefre
     // deal with Android 6 runtime permissions and fetch songs
     private void getPermissionAndFetch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
+            if (Dexter.isRequestOngoing()) {
+                // Dexter can't handle more than 1 petition at a time
+                return;
+            }
             Dexter.checkPermission(new PermissionListener() {
 
                 @Override
