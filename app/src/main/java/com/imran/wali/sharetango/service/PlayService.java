@@ -20,6 +20,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
 
     private MediaPlayer mMediaPlayer = null;
     private IBinder mBinder = new PlayBinder();
+    private float currVolume = 0;
 
     public PlayService() {
     }
@@ -48,6 +49,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         });
         long id = intent.getLongExtra("id", 0);
         play(id);
+       //mMediaPlayer.setVolume();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -68,6 +70,9 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
             e.printStackTrace();
         }
     }
+
+    public void volume(float leftVolume, float rightVolume){
+        mMediaPlayer.setVolume(leftVolume, rightVolume);}
 
     public void pause() {
         mMediaPlayer.pause();

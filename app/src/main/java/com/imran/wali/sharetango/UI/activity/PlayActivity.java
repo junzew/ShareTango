@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.media.AudioManager;
 
 import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.service.PlayService;
@@ -31,13 +32,21 @@ import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
 public class PlayActivity extends AppCompatActivity {
 
     private PlayService mService = null;
+    // for volume adjustment
+    private AudioManager mAudioManager = null;
     private boolean mBound = false;
     private boolean isPlaying = false;
+    private boolean isMute = false;
+    private float currVolume = 0;
+
     ImageView mPlayImage;
     ImageView mAlbumArtImage;
+    ImageView mVolumeImage;
     TextView mAlbumTitle;
     SeekBar mSeekBar;
+    SeekBar mVolumeBar;
     boolean isSeeking = false;
+    boolean isSeekingV = false;
 
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -103,6 +112,58 @@ public class PlayActivity extends AppCompatActivity {
         mPlayImage = (ImageView) findViewById(R.id.play_button);
         mAlbumTitle = (TextView) findViewById(R.id.song_title);
         mSeekBar = (SeekBar) findViewById(R.id.progress);
+        // TODO: Nex/Prev button
+        // TODO: shuffle and repeat and favorite
+
+        // Audio handler
+        // mute
+        mVolumeImage = (ImageView) findViewById(R.id.volume);
+        mVolumeBar = (SeekBar) findViewById(R.id.volume_bar);
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        // Set default/max volume to the current system volume
+        mVolumeBar.setMax(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+        // change system volume
+        // mVolumeBar.setProgress(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+        // change volume
+        mVolumeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // progress is the user input
+                if(fromUser) {
+                    // if user is updating the volume, then change mProgress
+                    // mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                    float volume = (float) (1 - (Math.log(100 - progress) / Math.log(100)));
+                    mService.volume(volume, volume);
+                    currVolume = volume;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+        mVolumeImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isMute) {
+                    isMute = false;
+                    mService.volume(currVolume,currVolume);
+                    mPlayImage.setImageResource(R.drawable.volume);
+                    Log.i("PlayActivity", "normal volume");
+                } else {
+                    mService.volume(0,0);
+                    Log.i("PlayActivity", "mute");
+                    isMute = true;
+                    mVolumeImage.setImageResource(R.drawable.mute);
+                }
+            }
+        });
+
+
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int mProgress = 0;
             @Override
@@ -125,6 +186,8 @@ public class PlayActivity extends AppCompatActivity {
                 mService.seekTo(position);
             }
         });
+
+
         Intent i = getIntent();
         long albumId = i.getLongExtra("albumId", 0);
         Uri uri = ContentUris.withAppendedId(ARTWORK_URI, albumId);
