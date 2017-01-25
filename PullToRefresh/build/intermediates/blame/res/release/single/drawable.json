@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable/indicator_bg_bottom.xml",
+        "source": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/drawable/indicator_bg_bottom.xml"
+    },
+    {
+        "merged": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable/indicator_bg_top.xml",
+        "source": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/drawable/indicator_bg_top.xml"
+    }
+]
