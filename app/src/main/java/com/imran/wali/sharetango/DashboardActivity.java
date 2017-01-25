@@ -3,6 +3,7 @@ package com.imran.wali.sharetango;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.AsyncTask;
@@ -19,6 +20,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ import android.widget.Toast;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
 import com.imran.wali.sharetango.UI.Fragments.SongFragment;
 import com.imran.wali.sharetango.Wifi.WiFiDirectBroadcastReceiver;
+import com.imran.wali.sharetango.Wifi.WifiClientRepository;
 import com.imran.wali.sharetango.Wifi.WifiMusicListProvider;
 
 import java.util.ArrayList;
@@ -50,6 +53,7 @@ public class DashboardActivity extends AppCompatActivity
     WifiP2pManager.PeerListListener peerListListener;
     Timer timer;
     TimerTask timerTask;
+    WifiClientRepository wifiClientRepository;
 
     /* Dashboard UI Variables */
     private ViewPager viewPager;
@@ -84,12 +88,17 @@ public class DashboardActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(viewPager);
 
         /* Init WIFI Direct */
+        wifiClientRepository = WifiClientRepository.getInstance();
         mWifiDirectManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         mChannel = mWifiDirectManager.initialize(this, getMainLooper(), null);
         peerListListener = new WifiP2pManager.PeerListListener() {
             @Override
             public void onPeersAvailable(WifiP2pDeviceList wifiP2pDeviceList) {
-
+                System.out.println("Wfofof" +wifiP2pDeviceList.getDeviceList());
+                for(WifiP2pDevice device : wifiP2pDeviceList.getDeviceList()){
+                    Log.d("Wifilol", device.toString());
+                }
+                /// /Log.d("WIFILOLOL", wifiP2pDeviceList.getDeviceList());
             }
         };
         mReceiver = new WiFiDirectBroadcastReceiver(mWifiDirectManager, mChannel, this, peerListListener);
@@ -110,6 +119,7 @@ public class DashboardActivity extends AppCompatActivity
 
         ExecutorService executor = Executors.newFixedThreadPool(1);
         WifiMusicListProviderService = executor.submit(new WifiMusicListProvider());
+
     }
 
     /* Setting up the View Pager And Fragments */
@@ -156,9 +166,7 @@ public class DashboardActivity extends AppCompatActivity
         protected Void doInBackground(Void... voids) {
             mWifiDirectManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
                 @Override
-                public void onSuccess() {
-
-                }
+                public void onSuccess() {}
 
                 @Override
                 public void onFailure(int reasonCode) { Toast.makeText(mContext,"Error",Toast.LENGTH_SHORT).show(); }
