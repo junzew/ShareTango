@@ -8,12 +8,14 @@ import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,8 +23,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.media.AudioManager;
+import android.widget.Toast;
 
+import com.imran.wali.sharetango.AudioManager.MusicData;
 import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.service.PlayService;
 import com.squareup.picasso.Picasso;
@@ -32,22 +35,17 @@ import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
 public class PlayActivity extends AppCompatActivity {
 
     private PlayService mService = null;
-    // for volume adjustment
-    private AudioManager mAudioManager = null;
     private boolean mBound = false;
     private boolean isPlaying = false;
-    private boolean isMute = false;
-    private float currVolume = 0;
-
     ImageView mPlayImage;
     ImageView mAlbumArtImage;
-    ImageView mVolumeImage;
     TextView mAlbumTitle;
     SeekBar mSeekBar;
-    SeekBar mVolumeBar;
-    ImageView mNextImage;
+    ImageView mPreviousButton;
+    ImageView mNextButton;
     boolean isSeeking = false;
-    boolean isSeekingV = false;
+    private UpdateSeekBarProgressTask task;
+    private BroadcastReceiver receiver;
 
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -56,7 +54,8 @@ public class PlayActivity extends AppCompatActivity {
             PlayService.PlayBinder binder = (PlayService.PlayBinder) service;
             mService = (PlayService) binder.getService();
             mBound = true;
-            new DelayTask().execute();
+            task = new UpdateSeekBarProgressTask();
+            task.execute();
         }
 
         @Override
@@ -65,7 +64,7 @@ public class PlayActivity extends AppCompatActivity {
         }
     };
 
-    public class DelayTask extends AsyncTask<Void, Integer, String> {
+    public class UpdateSeekBarProgressTask extends AsyncTask<Void, Integer, String> {
 
         @Override
         protected void onPreExecute() {
@@ -75,7 +74,7 @@ public class PlayActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... params) {
 
-            while (mBound && mService.currentPosition() < mService.getDuration()) {
+            while (mBound && !isCancelled()) {
                 if (!mService.isPlaying()) {
                     SystemClock.sleep(500);
                 } else {
@@ -92,6 +91,12 @@ public class PlayActivity extends AppCompatActivity {
         protected void onProgressUpdate(Integer... values) {
             mSeekBar.setProgress(values[0]);
         }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Toast.makeText(mService, "Complete", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -100,8 +105,32 @@ public class PlayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_play);
         initViews();
         bindPlayService();
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                MusicData data = intent.getParcelableExtra(PlayService.BROADCAST_FILTER);
+                Uri uri = ContentUris.withAppendedId(ARTWORK_URI, data.albumId);
+                Picasso.with(PlayActivity.this)
+                        .load(uri)
+                        .placeholder(R.drawable.track_ablumart_placeholder)
+                        .into(mAlbumArtImage);
+                mAlbumTitle.setText(data.title);
+                mSeekBar.setProgress(0);
+            }
+        };
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((receiver),
+                new IntentFilter(PlayService.BROADCAST_FILTER));
     }
 
+    @Override
+    protected void onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        super.onStop();
+    }
     private void bindPlayService() {
         Intent intent = new Intent(this, PlayService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -222,6 +251,8 @@ public class PlayActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (mBound) {
+            mBound = false;
+            task.cancel(true);
             mService.stopSelf();
             unbindService(mConnection);
             mBound = false;
