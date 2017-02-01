@@ -45,6 +45,7 @@ public class PlayActivity extends AppCompatActivity {
     TextView mAlbumTitle;
     SeekBar mSeekBar;
     SeekBar mVolumeBar;
+    ImageView mNextImage;
     boolean isSeeking = false;
     boolean isSeekingV = false;
 
@@ -113,6 +114,8 @@ public class PlayActivity extends AppCompatActivity {
         mAlbumTitle = (TextView) findViewById(R.id.song_title);
         mSeekBar = (SeekBar) findViewById(R.id.progress);
         // TODO: Nex/Prev button
+
+
         // TODO: shuffle and repeat and favorite
 
         // Audio handler
