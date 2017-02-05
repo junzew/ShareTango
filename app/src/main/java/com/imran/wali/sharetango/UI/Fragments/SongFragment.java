@@ -38,38 +38,7 @@ public class SongFragment extends PagerAdapterTabFragment {
         super.onCreate(savedInstanceState);
         mContext = (DashboardActivity) getActivity();
         adapter = new IndexableListAdapter(mContext);
-        getPermissionAndFetch();
-    }
-
-    // deal with Android 6 runtime permissions and fetch songs
-    private void getPermissionAndFetch() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-            Dexter.checkPermission(new PermissionListener() {
-
-                @Override
-                public void onPermissionGranted(PermissionGrantedResponse response) {
-                    fetchSongs();
-                }
-
-                @Override
-                public void onPermissionDenied(PermissionDeniedResponse response) {
-                    Toast.makeText(mContext, "Permission Denied", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-                    createDialog(token);
-                }
-            }, Manifest.permission.READ_EXTERNAL_STORAGE);
-        } else {
-           fetchSongs();
-        }
-    }
-
-    // get a list of songs on phone
-    public void fetchSongs() {
-        adapter.fetchSongListAsync();
+        fetchSongs();
     }
 
     @Override

@@ -1,11 +1,7 @@
 package com.imran.wali.sharetango.UI.Elements.IndexableListView;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +11,9 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.imran.wali.sharetango.AudioManager.MusicData;
+import com.imran.wali.sharetango.DataRepository.MusicDataRepository;
 import com.imran.wali.sharetango.R;
+import com.imran.wali.sharetango.Utility.MusicDataChangeListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -26,43 +24,27 @@ import java.util.HashMap;
  */
 public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
 
-    private HashMap<String,Integer> indexerHashMap;
-    private Cursor resultCursor;
+    private ArrayList<MusicData> dataHolder;
+    private HashMap<String, Integer> indexerHashMap;
     private Context mContext;
     private LayoutInflater inflater;
-    private String[] mSections = {"#","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};//"#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private String[] mSections = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};//"#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-
-    ArrayList<MusicData> fillItUp;
-
-    public IndexableListAdapter(Context context){
+    public IndexableListAdapter(Context context, Cursor cursor) {
         mContext = context;
-        inflater = (LayoutInflater) mContext.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         indexerHashMap = new HashMap<String, Integer>();
+        dataHolder = new ArrayList<>();
     }
 
     @Override
     public int getCount() {
-        return resultCursor == null ? 0 : resultCursor.getCount();
+        return MusicDataRepository.getInstance().getList().size();
     }
 
     @Override
     public MusicData getItem(int position) {
-        if(resultCursor != null){
-            resultCursor.moveToPosition(position);
-            MusicData musicData = new MusicData();
-            musicData.title = resultCursor.getString(resultCursor.getColumnIndex("title"));
-            musicData.artist= resultCursor.getString(resultCursor.getColumnIndex("artist"));
-            musicData.path = resultCursor.getString(resultCursor.getColumnIndex("_data"));
-            int songId = resultCursor.getInt(resultCursor.getColumnIndex("_id"));
-            musicData.albumArtURIString = "content://media/external/audio/media/" + songId + "/albumart";
-            musicData.duration = " ";
-            musicData.id = songId;
-            musicData.albumId = resultCursor.getLong(resultCursor.getColumnIndex("album_id"));
-            //duration
-            return musicData;
-        }
-        return null;
+        return dataHolder.get(position);
     }
 
     @Override
@@ -70,24 +52,30 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
         return position;
     }
 
+    private class ViewHolder {
+        TextView tracktitle;
+        TextView artist;
+        TextView duration;
+        ImageView albumart;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        if( convertView == null){
+        if (convertView == null) {
             //This is the first time we are seeing this
-            convertView = inflater.inflate(R.layout.listview_item,parent,false);
+            convertView = inflater.inflate(R.layout.listview_item, parent, false);
             holder = new ViewHolder();
             holder.tracktitle = (TextView) convertView.findViewById(R.id.item_trackname);
             holder.artist = (TextView) convertView.findViewById(R.id.item_artistname);
             holder.duration = (TextView) convertView.findViewById(R.id.item_duration);
             holder.albumart = (ImageView) convertView.findViewById(R.id.item_albumart);
             convertView.setTag(holder);
-        }
-        else{
+        } else {
             holder = (ViewHolder) convertView.getTag();
         }
         MusicData itemMusicData = getItem(position);
-        if( itemMusicData != null) {
+        if (itemMusicData != null) {
             holder.tracktitle.setText(itemMusicData.getTitle());
             holder.artist.setText(itemMusicData.getArtist());
             //holder.duration.setText(itemMusicData);
@@ -103,7 +91,7 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
 
     @Override
     public int getPositionForSection(int sectionIndex) {
-        for(int i = sectionIndex; i >= 0; i--){
+        for (int i = sectionIndex; i >= 0; i--) {
             if (indexerHashMap.containsKey(mSections[i])) {
                 //if the musicTitle matches the section of
                 return indexerHashMap.get(mSections[i]);
@@ -117,27 +105,16 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
         return 0;
     }
 
-    public class ViewHolder{
-        TextView tracktitle;
-        TextView artist;
-        TextView duration;
-        ImageView albumart;
+    @Override
+    public void onProgressChanged(int progress) {
     }
 
-    /*
-    Async Task to get Songs
-    */
-
-    public void fetchSongListAsync(){
-        new GetSongsTask().execute();
-    }
-
-    private void setDataFromCursor(Cursor rCursor){
-        resultCursor = rCursor;
+    @Override
+    public void onComplete() {
+        dataHolder = MusicDataRepository.getInstance().getList();
         indexerHashMap.clear();
-        for (int i = 0; i < resultCursor.getCount(); i++) {
-            resultCursor.moveToPosition(i);
-            String stringResult = resultCursor.getString(resultCursor.getColumnIndex("title"));
+        for (int i = 0; i < dataHolder.size(); i++) {
+            String stringResult = dataHolder.get(i).getTitle();
             if (stringResult.startsWith("a ") || stringResult.startsWith("A ")) {
                 stringResult = stringResult.substring(2);
             }
@@ -147,48 +124,12 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer{
             if (stringResult.startsWith("the ") || stringResult.startsWith("The ")) {
                 stringResult = stringResult.substring(4);
             }
-            String musicTitleFirstLetter = stringResult.substring(0,1).toUpperCase();
+            String musicTitleFirstLetter = stringResult.substring(0, 1).toUpperCase();
             if (!indexerHashMap.containsKey(musicTitleFirstLetter)) {
                 indexerHashMap.put(musicTitleFirstLetter, i);
             }
-
-        }
-    }
-
-    private class GetSongsTask extends AsyncTask <Object,Object,Object>{
-
-        boolean updateListFlag;
-
-        @Override
-        protected Object doInBackground(Object[] params) {
-            updateListFlag = false;
-            ContentResolver musicResolver = mContext.getContentResolver();
-            Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-            String[] columns = new String []{
-                    MediaStore.Audio.Media.TITLE,
-                    MediaStore.Audio.Media.ARTIST,
-                    MediaStore.Audio.Media.DURATION,
-                    MediaStore.Audio.Media.DATA,
-                    MediaStore.Audio.Media._ID,
-                    MediaStore.Audio.Media.ALBUM_ID
-            };
-            String selection = MediaStore.Audio.Media.TITLE + " != '' AND " +  MediaStore.Audio.Media.IS_MUSIC + "=1";
-            try{
-                Cursor cursor = musicResolver.query(musicUri, columns, selection, null,MediaStore.Audio.Media.TITLE);
-                if (cursor != null && cursor.getCount() != 0){
-                    resultCursor = cursor;
-                    updateListFlag = true;
-                    setDataFromCursor(resultCursor);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
+            notifyDataSetChanged();
         }
 
-        @Override
-        protected void onPostExecute(Object o) {
-            if(updateListFlag){ notifyDataSetChanged(); }
-        }
     }
 }

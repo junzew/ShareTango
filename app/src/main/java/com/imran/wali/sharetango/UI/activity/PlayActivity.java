@@ -23,7 +23,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.imran.wali.sharetango.R;
-import com.imran.wali.sharetango.Service.PlayService;
+import com.imran.wali.sharetango.service.PlayService;
 import com.squareup.picasso.Picasso;
 
 import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;

@@ -10,6 +10,7 @@ import android.os.Parcelable;
  */
 public class MusicData implements Parcelable{
 
+    public String owner;
     public String title;
     public String artist;
     public String path;
