@@ -47,13 +47,13 @@ public class PlaybackController {
 
     public MusicData next() {
         index++;
-        index = index % playbackQueue.size();
+        index = mod(index, playbackQueue.size());
         return playbackQueue.get(index);
     }
 
     public MusicData previous() {
         index--;
-        index = index % playbackQueue.size();
+        index = mod(index, playbackQueue.size());
         return playbackQueue.get(index);
     }
 
@@ -62,5 +62,10 @@ public class PlaybackController {
     }
 
 
+    // Java uses % for remainder, but we want to use modulo
+    private int mod(int x, int y) {
+        int result = x % y;
+        return result < 0? result + y : result;
+    }
 
 }
