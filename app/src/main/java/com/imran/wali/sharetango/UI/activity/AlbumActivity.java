@@ -96,6 +96,7 @@ public class AlbumActivity extends AppCompatActivity {
                     data.id = songId;
                     data.albumId = albumId;
                     mAdapter.add(data);
+                    PlaybackController.getInstance().enqueue(data);
                 }
             }
         }
@@ -122,7 +123,7 @@ public class AlbumActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // start playing song
                     MusicData song = getItem(position);
-                    PlaybackController.start(AlbumActivity.this, song);
+                    PlaybackController.getInstance().start(AlbumActivity.this, song);
                 }
             });
             return view;
