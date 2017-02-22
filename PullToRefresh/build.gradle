@@ -1,0 +1,25 @@
+apply plugin: 'com.android.library'
+dependencies {
+    compile 'com.android.support:support-v4:21.0.3'
+}
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "23.0.2"
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['./library/src']
+            resources.srcDirs = ['./library/src']
+            aidl.srcDirs = ['aidl']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['./library/res']
+            assets.srcDirs = ['assets']
+        }
+    }
+
+        lintOptions {
+            abortOnError false
+        }
+
+}

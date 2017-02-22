@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/res/merged/release/layout/pull_to_refresh_header_horizontal.xml",
+        "source": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/library/res/layout/pull_to_refresh_header_horizontal.xml"
+    },
+    {
+        "merged": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/res/merged/release/layout/pull_to_refresh_header_vertical.xml",
+        "source": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/library/res/layout/pull_to_refresh_header_vertical.xml"
+    }
+]

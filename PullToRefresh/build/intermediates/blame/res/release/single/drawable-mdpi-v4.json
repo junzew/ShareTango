@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable-mdpi-v4/indicator_arrow.png",
+        "source": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/library/res/drawable-mdpi/indicator_arrow.png"
+    },
+    {
+        "merged": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable-mdpi-v4/default_ptr_rotate.png",
+        "source": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/library/res/drawable-mdpi/default_ptr_rotate.png"
+    },
+    {
+        "merged": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable-mdpi-v4/default_ptr_flip.png",
+        "source": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/library/res/drawable-mdpi/default_ptr_flip.png"
+    }
+]

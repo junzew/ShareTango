@@ -10,6 +10,7 @@ import android.os.Parcelable;
  */
 public class MusicData implements Parcelable{
 
+    public String owner;
     public String title;
     public String artist;
     public String path;
@@ -87,6 +88,22 @@ public class MusicData implements Parcelable{
     @Override
     public String toString() {
         return title;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MusicData)) return false;
+
+        MusicData musicData = (MusicData) o;
+
+        return id == musicData.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
     }
 }
 

@@ -34,11 +34,10 @@
         android:id="@+id/favorite"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:src="@drawable/Favorite"
+        android:src="@drawable/favorite"
         android:layout_alignParentRight="true"
-        android:layout_above="@id/progress"
-        android:layout_marginBottom="-30dp"/>
 
+        android:layout_marginBottom="-30dp"/>
 
     <SeekBar
         android:id="@+id/progress"
@@ -108,7 +107,7 @@
         android:id="@+id/Volume"
         android:layout_width="28dp"
         android:layout_height="28dp"
-        android:src="@drawable/Volume"
+        android:src="@drawable/volume"
      />
     <SeekBar
         android:id="@+id/volume_bar"
