@@ -293,4 +293,5 @@ public class DashboardActivity extends AppCompatActivity
         /* close the music list providing Thread */
         WifiMusicListProviderService.cancel(true);
     }
+
 }
