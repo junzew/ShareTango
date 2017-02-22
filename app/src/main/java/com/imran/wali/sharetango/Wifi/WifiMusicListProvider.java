@@ -1,8 +1,13 @@
 package com.imran.wali.sharetango.Wifi;
 
 import android.content.Context;
+import android.util.Log;
+
+import com.imran.wali.sharetango.AudioManager.MusicData;
+import com.imran.wali.sharetango.DataRepository.MusicDataRepository;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -45,10 +50,10 @@ public class WifiMusicListProvider implements Runnable {
         @Override
         public void run() {
             try {
-                System.out.println("Got a client !");
-                OutputStream outputStream = clientSocket.getOutputStream();
+                Log.d("ShareTango", "Got a client");
                 // TODO: Send List!
-                outputStream.write("hahahahaha".getBytes());
+                ObjectOutputStream objectOutput = new ObjectOutputStream(clientSocket.getOutputStream());
+                objectOutput.writeObject(MusicDataRepository.getInstance().getList());
                 clientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();

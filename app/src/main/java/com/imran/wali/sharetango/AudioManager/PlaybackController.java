@@ -4,7 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.imran.wali.sharetango.UI.activity.PlayActivity;
-import com.imran.wali.sharetango.Service.PlayService;
+import com.imran.wali.sharetango.service.PlayService;
+
 
 import java.util.LinkedList;
 
@@ -28,8 +29,8 @@ public class PlaybackController {
     private LinkedList<MusicData> playbackQueue = new LinkedList<>();
     private int index = 0;
 
-    public void start(Context context, MusicData song) {
-        index = playbackQueue.indexOf(song);
+    public static void start(Context context, MusicData song) {
+       // index = playbackQueue.indexOf(song);
 
         Intent intent = new Intent(context, PlayService.class);
         intent.putExtra("id", song.getId());

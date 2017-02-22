@@ -34,11 +34,10 @@
         android:id="@+id/favorite"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:src="@drawable/Favorite"
+        android:src="@drawable/favorite"
         android:layout_alignParentRight="true"
-        android:layout_above="@id/progress"
-        android:layout_marginBottom="-30dp"/>
 
+        android:layout_marginBottom="-30dp"/>
 
     <SeekBar
         android:id="@+id/progress"
@@ -48,36 +47,6 @@
         android:layout_below="@id/song_title"
         android:layout_marginTop="40dp"
         android:max="100" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/buttons"
-        android:layout_below="@id/progress"
-        android:layout_centerHorizontal="true"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:id="@+id/previous"
-            android:src="@drawable/previous"
-            android:layout_marginRight="48dp"/>
-        <ImageView
-            android:id="@+id/play_button"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/pause_button" />
-
-        <ImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/next"
-            android:id="@+id/next"
-            android:layout_marginLeft="48dp"/>
-
-    </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -138,7 +107,7 @@
         android:id="@+id/Volume"
         android:layout_width="28dp"
         android:layout_height="28dp"
-        android:src="@drawable/Volume"
+        android:src="@drawable/volume"
      />
     <SeekBar
         android:id="@+id/volume_bar"

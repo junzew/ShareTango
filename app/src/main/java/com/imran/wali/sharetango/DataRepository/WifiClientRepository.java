@@ -49,9 +49,13 @@ public class WifiClientRepository {
         return listOfDevicesToAdd;
     }
 
-    public void setActiveList(Collection<WifiP2pDevice> newList){
+    public synchronized void setActiveList(Collection<WifiP2pDevice> newList){
         activeClientRepository.clear();
         activeClientRepository.addAll(newList);
+    }
+
+    public synchronized ArrayList<WifiP2pDevice> getActiveList(){
+        return activeClientRepository;
     }
 
 

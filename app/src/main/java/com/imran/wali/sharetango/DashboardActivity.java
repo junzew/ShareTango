@@ -1,8 +1,10 @@
 package com.imran.wali.sharetango;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -11,9 +13,11 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -24,8 +28,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.imran.wali.sharetango.DataRepository.MusicDataRepository;
+import com.imran.wali.sharetango.UI.Fragments.AvailableSongsFragment;
+import com.imran.wali.sharetango.UI.Fragments.DownloadedSongsFragment;
+import com.imran.wali.sharetango.UI.Fragments.LocalSongsFragment;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
-import com.imran.wali.sharetango.UI.Fragments.SongFragment;
 import com.imran.wali.sharetango.Wifi.WiFiDirectBroadcastReceiver;
 import com.imran.wali.sharetango.DataRepository.WifiClientRepository;
 import com.imran.wali.sharetango.Wifi.WifiMusicListProvider;
@@ -65,6 +72,26 @@ public class DashboardActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         mContext = this;
+
+        /* Ask For Permission */
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(mContext,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+
+            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+
+        }
+
+
+
+        /* Init Singletons */
+        MusicDataRepository.init(mContext);
 
         /* Init Toolbar */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -118,27 +145,32 @@ public class DashboardActivity extends AppCompatActivity
         WifiMusicListProviderService = executor.submit(new WifiMusicListProvider());
     }
 
-    /* Setting up the View Pager And Fragments */
-    private SongFragment mRemoteSongFragment = (SongFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.SONG);
-    private SongFragment mLocalSongFragment = (SongFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.SONG);
-//    private ArtistFragment mArtistFragment = (ArtistFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ARTIST);
-//    private AlbumFragment mAlbumFragment = (AlbumFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ALBUMS);
-//    private GenreFragment mGenreFragment = (GenreFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.GENRE);
-
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter{
-        final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[] { "Remote Songs", "Local Songs"};
+        final int PAGE_COUNT = 3;
+        private String tabTitles[] = new String[] { "Available", "Downloaded", "Local" }; // Fix this
         private ArrayList<Fragment> fragmentList;
 
-        ScreenSlidePagerAdapter(FragmentManager fm){
+        ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
+            /* Create Fragments and their arguments */
+            Bundle args = new Bundle();
+            args.putSerializable("type", PagerAdapterTabFragment.PageType.Available);
+            PagerAdapterTabFragment mAvailableSongFragment = new AvailableSongsFragment();
+            mAvailableSongFragment.setArguments(args);
+            args = new Bundle();
+            args.putSerializable("type", PagerAdapterTabFragment.PageType.Downloaded);
+            PagerAdapterTabFragment mDownloadedSongFragment = new DownloadedSongsFragment();
+            mDownloadedSongFragment.setArguments(args);
+            args = new Bundle();
+            args.putSerializable("type", PagerAdapterTabFragment.PageType.Local);
+            PagerAdapterTabFragment mLocalSongFragment = new LocalSongsFragment();
+            mLocalSongFragment.setArguments(args);
             fragmentList = new ArrayList<>();
-            /* Adding All Fragments Here */
-            fragmentList.add(mRemoteSongFragment);
+
+            /* Adding All Fragments Here To Adapter*/
+            fragmentList.add(mAvailableSongFragment);
+            fragmentList.add(mDownloadedSongFragment);
             fragmentList.add(mLocalSongFragment);
-//            fragmentList.add(mArtistFragment);
-//            fragmentList.add(mAlbumFragment);
-//            fragmentList.add(mGenreFragment);
         }
 
         @Override
@@ -253,9 +285,8 @@ public class DashboardActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStop(){
-        super.onStop();
-        /* unregister the wifi direct broadcast receiver */
+    protected void onDestroy(){
+         /* unregister the wifi direct broadcast receiver */
         unregisterReceiver(mReceiver);
         /* cancel timer if pausing activity */
         timer.cancel();

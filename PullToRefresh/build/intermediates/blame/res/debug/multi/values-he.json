@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/build/intermediates/incremental/mergeDebugResources/merged.dir/values-he/values-he.xml",
+        "outputFile": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/incremental/mergeDebugResources/merged.dir/values-he/values-he.xml",
         "map": [
             {
                 "to": {
@@ -11,13 +11,13 @@
                     "endOffset": 118
                 },
                 "from": {
-                    "file": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/values-he/pull_refresh_strings.xml",
+                    "file": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/library/res/values-he/pull_refresh_strings.xml",
                     "position": {
                         "startLine": 2,
                         "startColumn": 2,
-                        "startOffset": 55,
+                        "startOffset": 53,
                         "endColumn": 65,
-                        "endOffset": 118
+                        "endOffset": 116
                     }
                 }
             },
@@ -30,13 +30,13 @@
                     "endOffset": 185
                 },
                 "from": {
-                    "file": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/values-he/pull_refresh_strings.xml",
+                    "file": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/library/res/values-he/pull_refresh_strings.xml",
                     "position": {
                         "startLine": 4,
                         "startColumn": 2,
-                        "startOffset": 192,
+                        "startOffset": 188,
                         "endColumn": 64,
-                        "endOffset": 254
+                        "endOffset": 250
                     }
                 }
             },
@@ -49,13 +49,13 @@
                     "endOffset": 256
                 },
                 "from": {
-                    "file": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/values-he/pull_refresh_strings.xml",
+                    "file": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/library/res/values-he/pull_refresh_strings.xml",
                     "position": {
                         "startLine": 3,
                         "startColumn": 2,
-                        "startOffset": 122,
+                        "startOffset": 119,
                         "endColumn": 68,
-                        "endOffset": 188
+                        "endOffset": 185
                     }
                 }
             }
