@@ -49,11 +49,14 @@ public class PlayActivity extends AppCompatActivity {
     ImageView mPreviousButton;
     ImageView mNextButton;
     ImageView mRepeatButton;
+    ImageView mShuffleButton;
     float currVolume;
     float maxVolume;
     boolean isSeeking = false;
     boolean isMute = false;
     boolean isRepeat = false;
+    boolean isShuffle = false;
+    boolean isNormal = true;
     private UpdateSeekBarProgressTask task;
     private BroadcastReceiver receiver;
 
@@ -156,23 +159,36 @@ public class PlayActivity extends AppCompatActivity {
         mNextButton = (ImageView) findViewById(R.id.skip_next);
         mRepeatButton = (ImageView) findViewById(R.id.repeat);
 
-
         // TODO: shuffle and favorite
-        // Repeat
+        // play mode
         mRepeatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isRepeat) {
+                if(isNormal){
+                    isRepeat = true;
+                    isNormal = false;
+                    isShuffle = false;
+                    mRepeatButton.setImageResource(R.drawable.repeat_one);
+                    Log.i("PlayActivity", "repeat one play");
+                }else if(isRepeat){
+                    isRepeat=false;
+                    isNormal = false;
+                    isShuffle = true;
+                    mRepeatButton.setImageResource(R.drawable.shuffle);
+                    Log.i("PlayActivity", "shuffle play");
+                }else {
                     isRepeat = false;
+                    isNormal = true;
+                    isShuffle = false;
                     mRepeatButton.setImageResource(R.drawable.repeat);
                     Log.i("PlayActivity", "normal play");
-                } else {
-                    isRepeat = true;
-                    mRepeatButton.setImageResource(R.drawable.repeat_one);
-                    Log.i("PlayActivity", "repeat this song");
                 }
+
             }
         });
+
+
+
 
         // Audio handler
         // mute
@@ -242,10 +258,12 @@ public class PlayActivity extends AppCompatActivity {
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isRepeat){
+                if(isNormal){
                     mService.playNextOrStop(true);
-                }else{
+                }else if(isRepeat){
                     mService.restart();
+                }else{
+                    mService.shuffle(true);
                 }
             }
         });

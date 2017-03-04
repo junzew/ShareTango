@@ -29,6 +29,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     private LocalBroadcastManager broadcaster;
     private boolean fromUser = false; // true if user pressed 'next'/'previous' vs. automatically advance to next
     private float curVolume = 0;
+    private boolean isShuffle = false;
 
     public PlayService() {
     }
@@ -66,7 +67,13 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
 
     public void playNextOrStop(boolean isFromUser) {
         fromUser = isFromUser;
-        MusicData nextSong = PlaybackController.getInstance().next();
+        MusicData nextSong;
+        if(isShuffle){
+            nextSong = PlaybackController.getInstance().shuffle();
+        }else{
+            nextSong = PlaybackController.getInstance().next();
+        }
+
         if (nextSong == null) {
             stopSelf();
         } else {
@@ -88,6 +95,11 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
             broadcast(previousSong);
             play(previousSong.id);
         }
+    }
+    public void shuffle(boolean isFromUser){
+        fromUser = isFromUser;
+        isShuffle = true;
+
     }
 
     @Override

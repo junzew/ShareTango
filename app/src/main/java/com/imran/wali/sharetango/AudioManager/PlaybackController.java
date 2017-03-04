@@ -32,6 +32,7 @@ public class PlaybackController {
     private LinkedList<MusicData> playbackQueue = new LinkedList<>();
     private int index = 0;
     int size =0;
+    boolean isRandom = false;
 
     public void start(Context context, MusicData song) {
         index = playbackQueue.indexOf(song);
@@ -51,9 +52,19 @@ public class PlaybackController {
         playbackQueue.add(data);
     }
 
+    public int size(){
+        return size;
+    }
+    public MusicData shuffle(){
+        int randIndex = (int) (Math.random()*size);
+        index = randIndex;
+        return playbackQueue.get(index);
+    }
+
     public MusicData next() {
         Log.d("playbackController: ",  ""+index);
         Log.d("playbackController: ",  ""+size);
+
         if(index == size){
             // restart from the top of the list
             index = 0;
