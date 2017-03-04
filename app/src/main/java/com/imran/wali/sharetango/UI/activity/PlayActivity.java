@@ -4,12 +4,14 @@ package com.imran.wali.sharetango.UI.activity;
  * Created by junze on 2017-01-08.
  */
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.media.AudioManager;
 
 import com.imran.wali.sharetango.AudioManager.MusicData;
 import com.imran.wali.sharetango.R;
@@ -39,11 +42,18 @@ public class PlayActivity extends AppCompatActivity {
     private boolean isPlaying = false;
     ImageView mPlayImage;
     ImageView mAlbumArtImage;
+    ImageView mVolumeImage;
     TextView mAlbumTitle;
     SeekBar mSeekBar;
+    SeekBar mVolumeBar;
     ImageView mPreviousButton;
     ImageView mNextButton;
+    ImageView mRepeatButton;
+    float currVolume;
+    float maxVolume;
     boolean isSeeking = false;
+    boolean isMute = false;
+    boolean isRepeat = false;
     private UpdateSeekBarProgressTask task;
     private BroadcastReceiver receiver;
 
@@ -142,23 +152,42 @@ public class PlayActivity extends AppCompatActivity {
         mPlayImage = (ImageView) findViewById(R.id.play_button);
         mAlbumTitle = (TextView) findViewById(R.id.song_title);
         mSeekBar = (SeekBar) findViewById(R.id.progress);
-        // TODO: Nex/Prev button
+        mPreviousButton = (ImageView) findViewById(R.id.skip_prev);
+        mNextButton = (ImageView) findViewById(R.id.skip_next);
+        mRepeatButton = (ImageView) findViewById(R.id.repeat);
 
 
-        // TODO: shuffle and repeat and favorite
+        // TODO: shuffle and favorite
+        // Repeat
+        mRepeatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isRepeat) {
+                    isRepeat = false;
+                    mRepeatButton.setImageResource(R.drawable.repeat);
+                    Log.i("PlayActivity", "normal play");
+                } else {
+                    isRepeat = true;
+                    mRepeatButton.setImageResource(R.drawable.repeat_one);
+                    Log.i("PlayActivity", "repeat this song");
+                }
+            }
+        });
 
         // Audio handler
         // mute
         mVolumeImage = (ImageView) findViewById(R.id.volume);
         mVolumeBar = (SeekBar) findViewById(R.id.volume_bar);
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         // Set default/max volume to the current system volume
         mVolumeBar.setMax(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+        maxVolume = (float) mVolumeBar.getMax();
+        currVolume = maxVolume;
+
         // change system volume
         // mVolumeBar.setProgress(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
         // change volume
         mVolumeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -166,7 +195,8 @@ public class PlayActivity extends AppCompatActivity {
                 if(fromUser) {
                     // if user is updating the volume, then change mProgress
                     // mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
-                    float volume = (float) (1 - (Math.log(100 - progress) / Math.log(100)));
+                    //float volume = (float) (1 - (Math.log(100 - progress) / Math.log(100)));
+                    float volume =  ((float) progress / 100 * maxVolume);
                     mService.volume(volume, volume);
                     currVolume = volume;
                 }
@@ -183,14 +213,39 @@ public class PlayActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(isMute) {
                     isMute = false;
-                    mService.volume(currVolume,currVolume);
-                    mPlayImage.setImageResource(R.drawable.volume);
-                    Log.i("PlayActivity", "normal volume");
+                    float vol = mService.getCurrVolume();
+                    mService.volume(vol,vol);
+                    mVolumeImage.setImageResource(R.drawable.volume);
+                    Log.i("PlayActivity", "max volume"+maxVolume);
+                    Log.i("PlayActivity", "normal volume"+vol);
                 } else {
+                    mService.setCurrVolume(currVolume);
                     mService.volume(0,0);
                     Log.i("PlayActivity", "mute");
                     isMute = true;
                     mVolumeImage.setImageResource(R.drawable.mute);
+                }
+            }
+        });
+
+        mPreviousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isRepeat){
+
+                    mService.playPrevious(true);
+                }else{
+                    mService.restart();
+                }
+            }
+        });
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isRepeat){
+                    mService.playNextOrStop(true);
+                }else{
+                    mService.restart();
                 }
             }
         });
