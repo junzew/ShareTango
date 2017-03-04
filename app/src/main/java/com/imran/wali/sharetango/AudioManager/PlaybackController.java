@@ -2,8 +2,6 @@ package com.imran.wali.sharetango.AudioManager;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Debug;
-import android.util.Log;
 
 import com.imran.wali.sharetango.UI.activity.PlayActivity;
 import com.imran.wali.sharetango.service.PlayService;
@@ -52,23 +50,16 @@ public class PlaybackController {
         playbackQueue.add(data);
     }
 
-    public int size(){
-        return size;
-    }
-    public MusicData shuffle(){
-        int randIndex = (int) (Math.random()*size);
-        index = randIndex;
+    public MusicData shuffle() {
+        index = (int) (Math.random()*size);
         return playbackQueue.get(index);
     }
 
     public MusicData next() {
-        Log.d("playbackController: ",  ""+index);
-        Log.d("playbackController: ",  ""+size);
-
         if(index == size){
             // restart from the top of the list
             index = 0;
-        }else{
+        } else {
             index++;
             //index = index % size;
         }
@@ -76,7 +67,6 @@ public class PlaybackController {
     }
 
     public MusicData previous() {
-
         index--;
         if(index <= 0){
             index = playbackQueue.size()-1;
