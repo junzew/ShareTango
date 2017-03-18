@@ -70,7 +70,7 @@
             android:id="@+id/skip_prev"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/skip_prev"
+            android:src="@drawable/ic_skip_previous_black_48dp"
             android:layout_marginRight="10dp"/>
 
         <ImageView
@@ -83,14 +83,14 @@
             android:id="@+id/skip_next"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/skip_next"
+            android:src="@drawable/ic_skip_next_black"
             android:layout_marginLeft="10dp"/>
 
         <ImageView
             android:id="@+id/repeat"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/repeat"
+            android:src="@drawable/ic_repeat_black"
             android:layout_marginLeft="40dp"
             />
     </LinearLayout>

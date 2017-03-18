@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/incremental/mergeDebugResources/merged.dir/values-pt-rBR/values-pt-rBR.xml",
+        "outputFile": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/incremental/mergeDebugResources/merged.dir/values-pt-rBR/values-pt-rBR.xml",
         "map": [
             {
                 "to": {
@@ -11,7 +11,7 @@
                     "endOffset": 126
                 },
                 "from": {
-                    "file": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/library/res/values-pt-rBR/pull_refresh_strings.xml",
+                    "file": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/library/res/values-pt-rBR/pull_refresh_strings.xml",
                     "position": {
                         "startLine": 2,
                         "startColumn": 2,
@@ -30,7 +30,7 @@
                     "endOffset": 199
                 },
                 "from": {
-                    "file": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/library/res/values-pt-rBR/pull_refresh_strings.xml",
+                    "file": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/library/res/values-pt-rBR/pull_refresh_strings.xml",
                     "position": {
                         "startLine": 4,
                         "startColumn": 2,
@@ -49,7 +49,7 @@
                     "endOffset": 280
                 },
                 "from": {
-                    "file": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/library/res/values-pt-rBR/pull_refresh_strings.xml",
+                    "file": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/library/res/values-pt-rBR/pull_refresh_strings.xml",
                     "position": {
                         "startLine": 3,
                         "startColumn": 2,

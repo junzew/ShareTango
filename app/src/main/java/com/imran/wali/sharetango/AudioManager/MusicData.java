@@ -4,20 +4,26 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+
+import lombok.Data;
+
 /**
  * Created by Wali on 19-Jul-15.
  * Edited by junzew
  */
+@JsonObject
 public class MusicData implements Parcelable{
 
-    public String owner;
-    public String title;
-    public String artist;
-    public String path;
-    public String albumArtURIString;
-    public String duration;
-    public long id;
-    public long albumId;
+    @JsonField public String owner;
+    @JsonField public String title;
+    @JsonField public String artist;
+    @JsonField public String path;
+    @JsonField public String albumArtURIString;
+    @JsonField public String duration;
+    @JsonField public long id;
+    @JsonField public long albumId;
 
     public MusicData() {};
 

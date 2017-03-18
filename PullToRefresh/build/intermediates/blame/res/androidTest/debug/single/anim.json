@@ -1,18 +1,18 @@
 [
     {
-        "merged": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/res/merged/androidTest/debug/anim/slide_out_to_bottom.xml",
-        "source": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/bundles/debug/res/anim/slide_out_to_bottom.xml"
+        "merged": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/res/merged/androidTest/debug/anim/slide_in_from_bottom.xml",
+        "source": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/bundles/debug/res/anim/slide_in_from_bottom.xml"
     },
     {
-        "merged": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/res/merged/androidTest/debug/anim/slide_in_from_bottom.xml",
-        "source": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/bundles/debug/res/anim/slide_in_from_bottom.xml"
+        "merged": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/res/merged/androidTest/debug/anim/slide_out_to_bottom.xml",
+        "source": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/bundles/debug/res/anim/slide_out_to_bottom.xml"
     },
     {
-        "merged": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/res/merged/androidTest/debug/anim/slide_in_from_top.xml",
-        "source": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/bundles/debug/res/anim/slide_in_from_top.xml"
+        "merged": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/res/merged/androidTest/debug/anim/slide_out_to_top.xml",
+        "source": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/bundles/debug/res/anim/slide_out_to_top.xml"
     },
     {
-        "merged": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/res/merged/androidTest/debug/anim/slide_out_to_top.xml",
-        "source": "/home/wali/AndroidStudioProjects/ShareTango/PullToRefresh/build/intermediates/bundles/debug/res/anim/slide_out_to_top.xml"
+        "merged": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/res/merged/androidTest/debug/anim/slide_in_from_top.xml",
+        "source": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/bundles/debug/res/anim/slide_in_from_top.xml"
     }
 ]
