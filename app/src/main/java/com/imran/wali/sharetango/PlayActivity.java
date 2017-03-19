@@ -1,4 +1,4 @@
-package com.imran.wali.sharetango.UI.activity;
+package com.imran.wali.sharetango;
 
 /**
  * Created by junze on 2017-01-08.
@@ -6,12 +6,10 @@ package com.imran.wali.sharetango.UI.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -27,9 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.imran.wali.sharetango.AudioManager.MusicData;
-import com.imran.wali.sharetango.R;
-import com.imran.wali.sharetango.service.PlayService;
-import com.squareup.picasso.Picasso;
+import com.imran.wali.sharetango.Services.PlayService;
 
 public class PlayActivity extends AppCompatActivity {
 
@@ -39,10 +35,10 @@ public class PlayActivity extends AppCompatActivity {
     ImageView mPlayImage;
     ImageView mAlbumArtImage;
     TextView mAlbumTitle;
-    SeekBar mSeekBar;
+    private SeekBar mSeekBar;
     ImageView mPreviousButton;
     ImageView mNextButton;
-    boolean isSeeking = false;
+    private boolean isSeeking = false;
     private UpdateSeekBarProgressTask task;
     private BroadcastReceiver receiver;
 
@@ -141,8 +137,8 @@ public class PlayActivity extends AppCompatActivity {
         mPlayImage = (ImageView) findViewById(R.id.stop_button);
         mAlbumTitle = (TextView) findViewById(R.id.song_title);
         mSeekBar = (SeekBar) findViewById(R.id.progress);
-        mPreviousButton = (ImageView) findViewById(R.id.skip_prev);
-        mNextButton = (ImageView) findViewById(R.id.skip_next);
+        //mPreviousButton = (ImageView) findViewById(R.id.skip_prev);
+        //mNextButton = (ImageView) findViewById(R.id.skip_next);
         mPreviousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -208,7 +204,6 @@ public class PlayActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (mBound) {
-            mBound = false;
             task.cancel(true);
             mService.stopSelf();
             unbindService(mConnection);

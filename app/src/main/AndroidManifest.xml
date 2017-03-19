@@ -27,9 +27,10 @@
         </intent-filter>
         </activity>
 
-        <activity android:name=".UI.activity.PlayActivity" />
+        <activity android:name=".PlayActivity" />
 
-        <service android:name=".service.PlayService" />
+        <service android:name=".Services.PlayService" />
+        <service android:name=".Services.SalutService" />
 
     </application>
 </manifest>

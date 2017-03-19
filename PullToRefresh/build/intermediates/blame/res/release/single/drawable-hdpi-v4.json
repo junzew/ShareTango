@@ -1,14 +1,14 @@
 [
     {
-        "merged": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/res/merged/release/drawable-hdpi-v4/indicator_arrow.png",
-        "source": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/library/res/drawable-hdpi/indicator_arrow.png"
+        "merged": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable-hdpi-v4/default_ptr_flip.png",
+        "source": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/drawable-hdpi/default_ptr_flip.png"
     },
     {
-        "merged": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/res/merged/release/drawable-hdpi-v4/default_ptr_rotate.png",
-        "source": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/library/res/drawable-hdpi/default_ptr_rotate.png"
+        "merged": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable-hdpi-v4/indicator_arrow.png",
+        "source": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/drawable-hdpi/indicator_arrow.png"
     },
     {
-        "merged": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/res/merged/release/drawable-hdpi-v4/default_ptr_flip.png",
-        "source": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/library/res/drawable-hdpi/default_ptr_flip.png"
+        "merged": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable-hdpi-v4/default_ptr_rotate.png",
+        "source": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/drawable-hdpi/default_ptr_rotate.png"
     }
 ]

@@ -3,9 +3,8 @@ package com.imran.wali.sharetango.AudioManager;
 import android.content.Context;
 import android.content.Intent;
 
-import com.imran.wali.sharetango.UI.activity.PlayActivity;
-import com.imran.wali.sharetango.service.PlayService;
-
+import com.imran.wali.sharetango.PlayActivity;
+import com.imran.wali.sharetango.Services.PlayService;
 
 import java.util.LinkedList;
 

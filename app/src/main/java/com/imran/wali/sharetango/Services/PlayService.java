@@ -1,4 +1,4 @@
-package com.imran.wali.sharetango.service;
+package com.imran.wali.sharetango.Services;
 
 /**
  * Created by junze on 2017-01-08.
@@ -29,8 +29,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     private LocalBroadcastManager broadcaster;
     private boolean fromUser = false; // true if user pressed 'next'/'previous' vs. automatically advance to next
 
-    public PlayService() {
-    }
+    public PlayService() {}
 
     public class PlayBinder extends Binder {
         public Service getService() {

@@ -1,19 +1,13 @@
 package com.imran.wali.sharetango;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.IntentFilter;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.net.wifi.WpsInfo;
-import android.net.wifi.p2p.WifiP2pConfig;
-import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pDeviceList;
-import android.net.wifi.p2p.WifiP2pInfo;
-import android.net.wifi.p2p.WifiP2pManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
+import android.os.IBinder;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -30,54 +24,43 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.bluelinelabs.logansquare.LoganSquare;
-import com.imran.wali.sharetango.DataRepository.Message;
 import com.imran.wali.sharetango.DataRepository.MusicDataRepository;
+import com.imran.wali.sharetango.Services.SalutService;
 import com.imran.wali.sharetango.UI.Fragments.AvailableSongsFragment;
 import com.imran.wali.sharetango.UI.Fragments.DownloadedSongsFragment;
 import com.imran.wali.sharetango.UI.Fragments.LocalSongsFragment;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
-import com.imran.wali.sharetango.Wifi.WiFiDirectBroadcastReceiver;
-import com.imran.wali.sharetango.DataRepository.WifiClientRepository;
-import com.imran.wali.sharetango.Wifi.WifiMusicListProvider;
-import com.peak.salut.Callbacks.SalutCallback;
-import com.peak.salut.Callbacks.SalutDataCallback;
-import com.peak.salut.Callbacks.SalutDeviceCallback;
-import com.peak.salut.Salut;
-import com.peak.salut.SalutDataReceiver;
-import com.peak.salut.SalutDevice;
-import com.peak.salut.SalutServiceData;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
-public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SalutDataCallback {
+public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SalutService.ISalutCallback {
 
     Context mContext;
+    private SalutService mSalutService;
+    private boolean mBound = false;
+    private boolean isServiceBound = false;
+    private ServiceConnection mConnection = new ServiceConnection() {
 
-    public SalutDataReceiver salutDataReceiver;
-    public SalutServiceData serviceData;
-    public Salut network;
-    SalutDataCallback callback;
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            SalutService.SalutBinder binder = (SalutService.SalutBinder) service;
+            mSalutService = (SalutService) binder.getService();
+            isServiceBound = true;
+            mSalutService.setBoundActivity(DashboardActivity.this);
+            startSalutService();
+        }
 
-    /* WIFI Direct Variables */
-//    WifiP2pManager mWifiDirectManager;
-//    WifiP2pManager.Channel mChannel;
-//    BroadcastReceiver mReceiver;
-//    IntentFilter mIntentFilter;
-//    Future WifiMusicListProviderService;
-//    WifiP2pManager.PeerListListener peerListListener;
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            isServiceBound = false;
+        }
+    };
+
     Timer timer;
     TimerTask timerTask;
-    WifiClientRepository wifiClientRepository;
 
     /* Dashboard UI Variables */
     private ViewPager viewPager;
@@ -129,154 +112,24 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         TabLayout tabLayout = (TabLayout) findViewById(R.id.dashboard_viewpager_sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        /* Salut Init */
-        salutDataReceiver = new SalutDataReceiver(this, this);
+        bindSalutService();
+        Log.d("DASHBOARD", "bind service salut");
+    }
 
-        serviceData = new SalutServiceData("TestService", 9000, "HostDevice");
-
-        network = new Salut(salutDataReceiver, serviceData, new SalutCallback() {
-            @Override
-            public void call() {
-                System.out.println("YOUR DEVICE SUCKS");
-            }
-        });
-
-        isServiceAvailable();
-
-
-
-
-//        /* Init WIFI Direct */
-//        wifiClientRepository = WifiClientRepository.getInstance();
-//        mWifiDirectManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-//        mChannel = mWifiDirectManager.initialize(this, getMainLooper(), null);
-//        peerListListener = new WifiP2pManager.PeerListListener() {
-//            @Override
-//            public void onPeersAvailable(WifiP2pDeviceList wifiP2pDeviceList) {
-//                new PeerHandlingAsyncTask().execute(wifiP2pDeviceList.getDeviceList());
-//            }
-//        };
-//
-//        mReceiver = new WiFiDirectBroadcastReceiver(mWifiDirectManager, mChannel, this, peerListListener);
-//        mIntentFilter = new IntentFilter();
-//        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
-//        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-//        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
-//        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-//        timer = new Timer();
-//        timerTask = new TimerTask() {
-//            @Override
-//            public void run() {
-//                new DiscoverPeerAsyncTask().execute();
-//            }
-//        };
-//        //Schedule Timer At Create Time
-//        // TODO Decide whether to pause this
-//        timer.schedule(timerTask, 1000, 30000);
-//        registerReceiver(mReceiver, mIntentFilter);
-//
-//        ExecutorService executor = Executors.newFixedThreadPool(1);
-//        WifiMusicListProviderService = executor.submit(new WifiMusicListProvider());
-
-
+    private void startSalutService() {
+        Intent intent = new Intent(this, SalutService.class);
+        startService(intent);
+    }
+    private void bindSalutService() {
+        Intent intent = new Intent(this, SalutService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
-    public void onDataReceived(Object data) {
-        Log.d("SHARETANGO", "Received network data.");
-        try
-        {
-            Message newMessage = LoganSquare.parse((String)data, Message.class);
-            Log.d("SHARETANGO", newMessage.lol);  //See you on the other side!
-            //Do other stuff with data.
-        }
-        catch (IOException ex)
-        {
-            Log.e("SHARETANGO", "Failed to parse network data.");
-        }
-    }
+    public void updateClient() {
+        // receive data from SalutService
+        // TODO
 
-
-    private void setupNetwork()
-    {
-        if(!network.isRunningAsHost)
-        {
-            network.startNetworkService(new SalutDeviceCallback() {
-                @Override
-                public void call(SalutDevice salutDevice) {
-                    System.out.println("Host = someone connected");
-                    Toast.makeText(getApplicationContext(), "Device: " + salutDevice.instanceName + " connected.", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            //hostingBtn.setText("Stop Service");
-            //discoverBtn.setAlpha(0.5f);
-            //discoverBtn.setClickable(false);
-        }
-        else
-        {
-            network.stopNetworkService(false);
-            //hostingBtn.setText("Start Service");
-            //discoverBtn.setAlpha(1f);
-            //discoverBtn.setClickable(true);
-        }
-    }
-
-    private void isServiceAvailable()
-    {
-        if(!network.isRunningAsHost && !network.isDiscovering)
-        {
-            SalutCallback ifHostIsFound = new SalutCallback() {
-                @Override
-                public void call() {
-                    System.out.println("Make Connection with host cos you found HOST.");
-                    // DEVICE MAINTAINABLE AREA
-
-                    SalutCallback onRegisterSuccess = new SalutCallback() {
-                        @Override
-                        public void call() {
-                            System.out.println("REGISTER SUCCESSS... SENDING MESSAGE");
-
-                            Message message = new Message();
-                            message.lol = "Wali";
-                            network.sendToHost(message, new SalutCallback() {
-                                @Override
-                                public void call() {
-                                    Log.e("SHARETANGO", "Oh no! The data failed to send.");
-                                }
-                            });
-                        }
-                    };
-
-                    SalutCallback onRegisterFaliure = new SalutCallback(){
-                        @Override
-                        public void call() {
-                            System.out.println("WE FUCKED UP");
-                        }
-                    };
-                    network.registerWithHost(network.foundDevices.get(0),onRegisterSuccess, onRegisterFaliure );
-                }
-            };
-            SalutCallback ifHostIsNotFound = new SalutCallback(){
-                @Override
-                public void call() {
-                    setupNetwork();
-                    System.out.println("Host not found, starting service");
-                }
-            };
-
-            network.discoverWithTimeout(ifHostIsFound, ifHostIsNotFound, 10000);
-            //discoverBtn.setText("Stop Discovery");
-            //hostingBtn.setAlpha(0.5f);
-            //hostingBtn.setClickable(false);
-        }
-        else
-        {
-            network.stopServiceDiscovery(true);
-            //discoverBtn.setText("Discover Services");
-            //hostingBtn.setAlpha(1f);
-            //hostingBtn.setClickable(false);
-        }
     }
 
 //    @Override
@@ -461,9 +314,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         /* unregister the wifi direct broadcast receiver */
         //unregisterReceiver(mReceiver);
         /* cancel timer if pausing activity */
-        timer.cancel();
+       // timer.cancel();
         /* close the music list providing Thread */
         //WifiMusicListProviderService.cancel(true);
+        unbindService(mConnection);
         super.onDestroy();
     }
 
