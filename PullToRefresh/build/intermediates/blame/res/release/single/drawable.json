@@ -1,10 +1,18 @@
 [
     {
-        "merged": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/res/merged/release/drawable/indicator_bg_bottom.xml",
-        "source": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/library/res/drawable/indicator_bg_bottom.xml"
+        "merged": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable/indicator_bg_bottom.xml",
+        "source": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/drawable/indicator_bg_bottom.xml"
     },
     {
-        "merged": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/build/intermediates/res/merged/release/drawable/indicator_bg_top.xml",
-        "source": "/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/library/res/drawable/indicator_bg_top.xml"
+        "merged": "/Users/vivian/Desktop/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable/indicator_bg_top.xml",
+        "source": "/Users/vivian/Desktop/ShareTango/PullToRefresh/library/res/drawable/indicator_bg_top.xml"
+    },
+    {
+        "merged": "/Users/vivian/Desktop/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable/indicator_bg_bottom.xml",
+        "source": "/Users/vivian/Desktop/ShareTango/PullToRefresh/library/res/drawable/indicator_bg_bottom.xml"
+    },
+    {
+        "merged": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable/indicator_bg_top.xml",
+        "source": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/drawable/indicator_bg_top.xml"
     }
 ]

@@ -30,14 +30,6 @@
         android:text="Sample Song Name"
         android:textSize="18sp" />
 
-    <ImageView
-        android:id="@+id/favorite"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:src="@drawable/favorite"
-        android:layout_alignParentRight="true"
-
-        android:layout_marginBottom="-30dp"/>
 
     <SeekBar
         android:id="@+id/progress"
@@ -51,52 +43,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/progress"
-        android:layout_marginBottom="45dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/shuffle"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/shuffle"
-            android:layout_marginRight="40dp"
-            />
-
-        <ImageView
-            android:id="@+id/skip_prev"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_skip_previous_black_48dp"
-            android:layout_marginRight="10dp"/>
-
-        <ImageView
-            android:id="@+id/stop_button"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/pause_button" />
-
-        <ImageView
-            android:id="@+id/skip_next"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_skip_next_black"
-            android:layout_marginLeft="10dp"/>
-
-        <ImageView
-            android:id="@+id/repeat"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/ic_repeat_black"
-            android:layout_marginLeft="40dp"
-            />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
@@ -104,7 +50,7 @@
 
 
     <ImageView
-        android:id="@+id/Volume"
+        android:id="@+id/volume"
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:src="@drawable/volume"
@@ -115,8 +61,54 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:max="100" />
+        android:max="100"
+        android:progress="100"/>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_below="@+id/progress"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:id="@+id/favorite"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/favorite"
+            android:layout_marginRight="40dp"
+            />
+
+        <ImageView
+            android:id="@+id/skip_prev"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/skip_prev"
+            android:layout_marginRight="10dp"/>
+
+        <ImageView
+            android:id="@+id/play_button"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/pause_button" />
+
+        <ImageView
+            android:id="@+id/skip_next"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/skip_next"
+            android:layout_marginLeft="10dp"/>
+
+        <ImageView
+            android:id="@+id/repeat"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/repeat"
+            android:layout_marginLeft="42dp"
+            />
     </LinearLayout>
 
 </RelativeLayout>

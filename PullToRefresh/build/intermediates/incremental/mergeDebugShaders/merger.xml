@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/src/main/shaders"/></dataSet><dataSet config="debug"><source path="/home/wali/AndroidStudioProjects/sharetango/PullToRefresh/src/debug/shaders"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="/Users/vivian/Desktop/ShareTango/PullToRefresh/src/main/shaders"/></dataSet><dataSet config="debug"><source path="/Users/vivian/Desktop/ShareTango/PullToRefresh/src/debug/shaders"/></dataSet></merger>

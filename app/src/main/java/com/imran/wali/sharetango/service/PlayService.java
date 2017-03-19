@@ -28,6 +28,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     private IBinder mBinder = new PlayBinder();
     private LocalBroadcastManager broadcaster;
     private boolean fromUser = false; // true if user pressed 'next'/'previous' vs. automatically advance to next
+    private float curVolume = 1; // between [0,1] initialize to max
 
     public PlayService() {
     }
@@ -75,15 +76,29 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
+
     public void playPrevious(boolean isFromUser) {
         fromUser = isFromUser;
         MusicData previousSong = PlaybackController.getInstance().previous();
         if (previousSong == null) {
             stopSelf();
+            mMediaPlayer.stop();
         } else {
             mMediaPlayer.reset();
             broadcast(previousSong);
             play(previousSong.id);
+        }
+    }
+
+    public void shuffle(boolean isFromUser){
+        fromUser = isFromUser;
+        MusicData nextSong = PlaybackController.getInstance().shuffle();
+        if (nextSong == null) {
+            stopSelf();
+        } else {
+            mMediaPlayer.reset();
+            broadcast(nextSong);
+            play(nextSong.id);
         }
     }
 
@@ -105,6 +120,18 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
+    public void volume(float leftVolume, float rightVolume){
+        mMediaPlayer.setVolume(leftVolume, rightVolume);}
+    public void setCurrVolume(float volume){
+        if (volume == Float.POSITIVE_INFINITY) {
+            volume = 1;
+        }
+        curVolume = volume;
+    }
+    public float getCurrVolume(){
+        return curVolume;
+    }
+
     public void pause() {
         mMediaPlayer.pause();
     }
@@ -113,6 +140,10 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     }
     public void stop() {
         mMediaPlayer.stop();
+    }
+    public void restart(){
+        mMediaPlayer.seekTo(0);
+        mMediaPlayer.start();
     }
     public int currentPosition() {
         return mMediaPlayer.getCurrentPosition();
