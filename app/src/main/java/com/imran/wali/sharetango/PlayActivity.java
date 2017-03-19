@@ -1,4 +1,4 @@
-package com.imran.wali.sharetango;
+package com.imran.wali.sharetango.UI.activity;
 
 /**
  * Created by junze on 2017-01-08.
@@ -6,10 +6,12 @@ package com.imran.wali.sharetango;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -25,7 +27,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.imran.wali.sharetango.AudioManager.MusicData;
-import com.imran.wali.sharetango.Services.PlayService;
+import com.imran.wali.sharetango.R;
+import com.imran.wali.sharetango.service.PlayService;
+import com.squareup.picasso.Picasso;
 
 public class PlayActivity extends AppCompatActivity {
 
@@ -34,11 +38,19 @@ public class PlayActivity extends AppCompatActivity {
     private boolean isPlaying = false;
     ImageView mPlayImage;
     ImageView mAlbumArtImage;
+    ImageView mVolumeImage;
     TextView mAlbumTitle;
-    private SeekBar mSeekBar;
+    SeekBar mSeekBar;
+    SeekBar mVolumeBar;
     ImageView mPreviousButton;
     ImageView mNextButton;
-    private boolean isSeeking = false;
+    ImageView mRepeatButton;
+    float maxVolume;
+    boolean isSeeking = false;
+    boolean isMute = false;
+    boolean isRepeat = false;
+    boolean isShuffle = false;
+    boolean isNormal = true;
     private UpdateSeekBarProgressTask task;
     private BroadcastReceiver receiver;
 
@@ -71,9 +83,9 @@ public class PlayActivity extends AppCompatActivity {
 
             while (mBound && !isCancelled()) {
                 if (!mService.isPlaying()) {
-                    SystemClock.sleep(500);
+                    SystemClock.sleep(200);
                 } else {
-                    int p = (int) ((double)mService.currentPosition()/ (double)mService.getDuration() * 100);
+                    int p = (int) ((double) mService.currentPosition() / (double) mService.getDuration() * 100);
                     if (!isSeeking) {
                         publishProgress(p);
                     }
@@ -84,7 +96,10 @@ public class PlayActivity extends AppCompatActivity {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            mSeekBar.setProgress(values[0]);
+            int from = mSeekBar.getProgress();
+            int to = values[0];
+            if (Math.abs(from - to) <= 1)
+                mSeekBar.setProgress(values[0]);
         }
 
         @Override
@@ -98,8 +113,8 @@ public class PlayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
-        initViews();
         bindPlayService();
+        initViews();
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -114,6 +129,7 @@ public class PlayActivity extends AppCompatActivity {
             }
         };
     }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -126,6 +142,7 @@ public class PlayActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         super.onStop();
     }
+
     private void bindPlayService() {
         Intent intent = new Intent(this, PlayService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -134,28 +151,120 @@ public class PlayActivity extends AppCompatActivity {
 
     private void initViews() {
         mAlbumArtImage = (ImageView) findViewById(R.id.album);
-        mPlayImage = (ImageView) findViewById(R.id.stop_button);
+        mPlayImage = (ImageView) findViewById(R.id.play_button);
         mAlbumTitle = (TextView) findViewById(R.id.song_title);
         mSeekBar = (SeekBar) findViewById(R.id.progress);
-        //mPreviousButton = (ImageView) findViewById(R.id.skip_prev);
-        //mNextButton = (ImageView) findViewById(R.id.skip_next);
+        mPreviousButton = (ImageView) findViewById(R.id.skip_prev);
+        mNextButton = (ImageView) findViewById(R.id.skip_next);
+        mRepeatButton = (ImageView) findViewById(R.id.repeat);
+
+        // TODO: shuffle and favorite
+        // play mode
+        mRepeatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isNormal) {
+                    isRepeat = true;
+                    isNormal = false;
+                    isShuffle = false;
+                    mRepeatButton.setImageResource(R.drawable.repeat_one);
+                    Log.i("PlayActivity", "repeat one play");
+                } else if (isRepeat) {
+                    isRepeat = false;
+                    isNormal = false;
+                    isShuffle = true;
+                    mRepeatButton.setImageResource(R.drawable.shuffle);
+                    Log.i("PlayActivity", "shuffle play");
+                } else {
+                    isRepeat = false;
+                    isNormal = true;
+                    isShuffle = false;
+                    mRepeatButton.setImageResource(R.drawable.repeat);
+                    Log.i("PlayActivity", "normal play");
+                }
+            }
+        });
+
+        // Audio handler
+        mVolumeImage = (ImageView) findViewById(R.id.volume);
+        mVolumeBar = (SeekBar) findViewById(R.id.volume_bar);
+        maxVolume = (float) mVolumeBar.getMax(); // default is 100
+
+        // change volume
+        mVolumeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // progress is the user input
+                if (fromUser) {
+                    // if user is updating the volume, then change mProgress
+                    // http://stackoverflow.com/questions/5215459/android-mediaplayer-setvolume-function
+                    float volume = (float) (1 - (Math.log(100 - progress) / Math.log(100)));
+                    if (!isMute) {
+                        mService.volume(volume, volume);
+                    }
+                    mService.setCurrVolume(volume);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+        mVolumeImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isMute) {
+                    isMute = false;
+                    float vol = mService.getCurrVolume();
+                    mService.volume(vol, vol);
+                    mVolumeImage.setImageResource(R.drawable.volume);
+                } else {
+                    mService.volume(0, 0);
+                    isMute = true;
+                    mVolumeImage.setImageResource(R.drawable.mute);
+                }
+            }
+        });
+
         mPreviousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mService.playPrevious(true);
+                if (!isRepeat) {
+                    mService.playPrevious(true);
+                } else {
+                    mService.restart();
+                    mSeekBar.setProgress(0);
+                }
+                mPlayImage.setImageResource(R.drawable.pause_button);
             }
         });
+
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mService.playNextOrStop(true);
+                if (isNormal) {
+                    mService.playNextOrStop(true);
+                } else if (isRepeat) {
+                    mService.restart();
+                    mSeekBar.setProgress(0);
+                } else {
+                    mService.shuffle(true);
+                }
+                mPlayImage.setImageResource(R.drawable.pause_button);
             }
         });
+
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int mProgress = 0;
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(fromUser) {
+                if (fromUser) {
                     mProgress = progress;
                 }
             }
@@ -167,12 +276,12 @@ public class PlayActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mSeekBar.setProgress(mProgress);
                 isSeeking = false;
                 int position = (int) ((double) mProgress / 100 * mService.getDuration());
                 mService.seekTo(position);
             }
         });
+        
         Intent i = getIntent();
         long albumId = i.getLongExtra("albumId", 0);
 //        Uri uri = ContentUris.withAppendedId(ARTWORK_URI, albumId);
@@ -185,13 +294,11 @@ public class PlayActivity extends AppCompatActivity {
         mPlayImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isPlaying) {
+                if (mService.isPlaying()) {
                     mService.pause();
                     Log.i("PlayActivity", "pause");
-                    isPlaying = false;
                     mPlayImage.setImageResource(R.drawable.play);
                 } else {
-                    isPlaying = true;
                     mService.resume();
                     mPlayImage.setImageResource(R.drawable.pause_button);
                     Log.i("PlayActivity", "resume");
@@ -204,6 +311,7 @@ public class PlayActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (mBound) {
+            mBound = false;
             task.cancel(true);
             mService.stopSelf();
             unbindService(mConnection);

@@ -18,6 +18,8 @@ public class PlaybackController {
 
     private PlaybackController() {}
 
+
+
     public static PlaybackController getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new PlaybackController();
@@ -27,9 +29,12 @@ public class PlaybackController {
 
     private LinkedList<MusicData> playbackQueue = new LinkedList<>();
     private int index = 0;
+    int size =0;
+    boolean isRandom = false;
 
-    public static void start(Context context, MusicData song) {
-       // index = playbackQueue.indexOf(song);
+    public void start(Context context, MusicData song) {
+        index = playbackQueue.indexOf(song);
+        size = playbackQueue.size()-1;
 
         Intent intent = new Intent(context, PlayService.class);
         intent.putExtra("id", song.getId());
@@ -45,17 +50,32 @@ public class PlaybackController {
         playbackQueue.add(data);
     }
 
+    public MusicData shuffle() {
+        index = (int) (Math.random()*size);
+        return playbackQueue.get(index);
+    }
+
     public MusicData next() {
-        index++;
-        index = index % playbackQueue.size();
+        if(index == size){
+            // restart from the top of the list
+            index = 0;
+        } else {
+            index++;
+            //index = index % size;
+        }
         return playbackQueue.get(index);
     }
 
     public MusicData previous() {
         index--;
-        index = index % playbackQueue.size();
+        if(index <= 0){
+            index = playbackQueue.size()-1;
+        }else{
+            index = index % playbackQueue.size();
+        }
         return playbackQueue.get(index);
     }
+
 
     public void clear() {
         playbackQueue.clear();
