@@ -1,4 +1,4 @@
-package com.imran.wali.sharetango.UI.activity;
+package com.imran.wali.sharetango;
 
 /**
  * Created by junze on 2017-01-08.
@@ -6,12 +6,10 @@ package com.imran.wali.sharetango.UI.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -27,9 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.imran.wali.sharetango.AudioManager.MusicData;
-import com.imran.wali.sharetango.R;
-import com.imran.wali.sharetango.service.PlayService;
-import com.squareup.picasso.Picasso;
+import com.imran.wali.sharetango.Services.PlayService;
 
 public class PlayActivity extends AppCompatActivity {
 
