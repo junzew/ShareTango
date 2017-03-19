@@ -30,14 +30,6 @@
         android:text="Sample Song Name"
         android:textSize="18sp" />
 
-    <!--<ImageView-->
-        <!--android:id="@+id/favorite"-->
-        <!--android:layout_width="36dp"-->
-        <!--android:layout_height="36dp"-->
-        <!--android:src="@drawable/favorite"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_marginBottom="-30dp"-->
-        <!--android:layout_below="@id/song_title"/>-->
 
     <SeekBar
         android:id="@+id/progress"
@@ -51,12 +43,36 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/progress"
-        android:layout_marginBottom="45dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="right">
+
+
+    <ImageView
+        android:id="@+id/volume"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@drawable/volume"
+     />
+    <SeekBar
+        android:id="@+id/volume_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:max="100"
+        android:progress="100"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_below="@+id/progress"
+        android:layout_alignParentStart="true">
 
         <ImageView
             android:id="@+id/favorite"
@@ -93,32 +109,6 @@
             android:src="@drawable/repeat"
             android:layout_marginLeft="42dp"
             />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:gravity="right">
-
-
-    <ImageView
-        android:id="@+id/volume"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:src="@drawable/volume"
-     />
-    <SeekBar
-        android:id="@+id/volume_bar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:max="100"
-        android:progress="100"/>
-
     </LinearLayout>
 
 </RelativeLayout>

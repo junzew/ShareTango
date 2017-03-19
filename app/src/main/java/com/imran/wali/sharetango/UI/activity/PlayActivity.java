@@ -31,8 +31,6 @@ import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.service.PlayService;
 import com.squareup.picasso.Picasso;
 
-import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
-
 public class PlayActivity extends AppCompatActivity {
 
     private PlayService mService = null;
@@ -121,11 +119,11 @@ public class PlayActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 MusicData data = intent.getParcelableExtra(PlayService.BROADCAST_FILTER);
-                Uri uri = ContentUris.withAppendedId(ARTWORK_URI, data.albumId);
-                Picasso.with(PlayActivity.this)
-                        .load(uri)
-                        .placeholder(R.drawable.track_ablumart_placeholder)
-                        .into(mAlbumArtImage);
+//                Uri uri = ContentUris.withAppendedId(ARTWORK_URI, data.albumId);
+//                Picasso.with(PlayActivity.this)
+//                        .load(uri)
+//                        .placeholder(R.drawable.track_ablumart_placeholder)
+//                        .into(mAlbumArtImage);
                 mAlbumTitle.setText(data.title);
                 mSeekBar.setProgress(0);
             }
@@ -286,11 +284,11 @@ public class PlayActivity extends AppCompatActivity {
         
         Intent i = getIntent();
         long albumId = i.getLongExtra("albumId", 0);
-        Uri uri = ContentUris.withAppendedId(ARTWORK_URI, albumId);
-        Picasso.with(PlayActivity.this)
-                .load(uri)
-                .placeholder(R.drawable.track_ablumart_placeholder)
-                .into(mAlbumArtImage);
+//        Uri uri = ContentUris.withAppendedId(ARTWORK_URI, albumId);
+//        Picasso.with(PlayActivity.this)
+//                .load(uri)
+//                .placeholder(R.drawable.track_ablumart_placeholder)
+//                .into(mAlbumArtImage);
         String songTitle = i.getStringExtra("title");
         mAlbumTitle.setText(songTitle);
         mPlayImage.setOnClickListener(new View.OnClickListener() {
