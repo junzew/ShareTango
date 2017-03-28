@@ -1,6 +1,5 @@
 package com.imran.wali.sharetango.AudioManager;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -37,18 +36,7 @@ public class PlaybackController {
     private LinkedList<MusicData> playbackQueue = new LinkedList<>();
     private int index = 0;
 
-    public void start(Context context, MusicData song) {
-        index = playbackQueue.indexOf(song);
-
-//        Intent intent = new Intent(context, PlayService.class);
-//        intent.putExtra("id", song.getId());
-//        context.startService(intent);
-
-//        Intent i = new Intent(context, PlayActivity.class);
-//        i.putExtra("albumId", song.getAlbumId());
-//        i.putExtra("title", song.getTitle());
-//        context.startActivity(i);
-
+    public void start(MusicData song) {
         for (IMusicStartListener listener: listeners) {
             listener.startMusic(song);
         }

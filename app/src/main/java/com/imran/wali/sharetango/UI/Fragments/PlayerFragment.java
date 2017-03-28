@@ -231,6 +231,7 @@ public class PlayerFragment extends Fragment {
                 .into(mAlbumArtImage);
         mAlbumTitle.setText(data.title);
         mSeekBar.setProgress(0);
+        mPlayImage.setImageResource(R.drawable.pause_button);
     }
 
     @Override

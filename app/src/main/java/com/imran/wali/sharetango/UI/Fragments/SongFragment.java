@@ -105,7 +105,7 @@ public class SongFragment extends PagerAdapterTabFragment implements PullToRefre
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             MusicData song = adapter.getItem(position);
-            PlaybackController.getInstance().start(getActivity(), song);
+            PlaybackController.getInstance().start(song);
         }
     };
 

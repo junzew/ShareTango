@@ -123,7 +123,7 @@ public class AlbumActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // start playing song
                     MusicData song = getItem(position);
-                    PlaybackController.getInstance().start(AlbumActivity.this, song);
+                    PlaybackController.getInstance().start(song);
                 }
             });
             return view;

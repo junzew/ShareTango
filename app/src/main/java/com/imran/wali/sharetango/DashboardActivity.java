@@ -2,6 +2,7 @@ package com.imran.wali.sharetango;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -25,16 +26,23 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.imran.wali.sharetango.AudioManager.MusicData;
+import com.imran.wali.sharetango.AudioManager.PlaybackController;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
 import com.imran.wali.sharetango.UI.Fragments.PlayerFragment;
 import com.imran.wali.sharetango.UI.Fragments.SongFragment;
 import com.imran.wali.sharetango.service.PlayService;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
 
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SlidingUpPanelLayout.PanelSlideListener{
@@ -46,8 +54,13 @@ public class DashboardActivity extends AppCompatActivity
     /* Dashboard UI Support Variables */
     private ScreenSlidePagerAdapter slidePagerAdapter;
 
+    /* Floating Player */
     private SlidingUpPanelLayout mSlidingUpPanelLayout;
     private LinearLayout mFloatingPlayer;
+    private ImageView mAlbumArtImage;
+    private TextView mSongTitle;
+    private ImageButton mPlayButton;
+    private ImageButton mNextButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +91,30 @@ public class DashboardActivity extends AppCompatActivity
         mSlidingUpPanelLayout.addPanelSlideListener(this);
         mFloatingPlayer = (LinearLayout) findViewById(R.id.floating_player);
 
+        mAlbumArtImage = (ImageView) findViewById(R.id.floating_player_album_art);
+        mSongTitle = (TextView) findViewById(R.id.floating_player_song_name);
+        mPlayButton = (ImageButton) findViewById(R.id.floating_player_play_button);
+        mNextButton = (ImageButton) findViewById(R.id.floating_player_next_button);
+        mPlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mService.isPlaying()) {
+                    mService.pause();
+                    mPlayButton.setImageResource(R.drawable.play);
+                } else {
+                    mService.resume();
+                    mPlayButton.setImageResource(R.drawable.pause_button);
+                }
+            }
+        });
+        
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mService.playNextOrStop(true);
+            }
+        });
+
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -85,6 +122,20 @@ public class DashboardActivity extends AppCompatActivity
                 mPlayerFragment.updateMusicData(data);
             }
         };
+
+        PlaybackController.getInstance().addListener(new PlaybackController.IMusicStartListener() {
+            @Override
+            public void startMusic(MusicData music) {
+                // Update the floating player's UI
+                Picasso.with(DashboardActivity.this)
+                        .load(ContentUris.withAppendedId(ARTWORK_URI, music.albumId))
+                        .placeholder(R.drawable.track_ablumart_placeholder)
+                        .into(mAlbumArtImage);
+                mSongTitle.setText(music.getTitle());
+                mPlayButton.setImageResource(R.drawable.pause_button);
+
+            }
+        });
 
         Log.d("DashboardActivity", "starting PlayService");
         bindPlayService();
@@ -151,6 +202,7 @@ public class DashboardActivity extends AppCompatActivity
     @Override
     public void onPanelSlide(View panel, float slideOffset) {
         Log.d("panel", "slide");
+        mFloatingPlayer.setVisibility(View.INVISIBLE);
     }
 
     @Override

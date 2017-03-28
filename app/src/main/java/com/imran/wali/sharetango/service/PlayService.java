@@ -80,6 +80,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     public void playNextOrStop(boolean isFromUser) {
         fromUser = isFromUser;
         MusicData nextSong = PlaybackController.getInstance().next();
+        PlaybackController.getInstance().start(nextSong);
         if (nextSong == null) {
             stopSelf();
         } else {
@@ -92,6 +93,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     public void playPrevious(boolean isFromUser) {
         fromUser = isFromUser;
         MusicData previousSong = PlaybackController.getInstance().previous();
+        PlaybackController.getInstance().start(previousSong);
         if (previousSong == null) {
             stopSelf();
         } else {
