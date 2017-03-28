@@ -23,22 +23,28 @@ public class PlaybackController {
         return INSTANCE;
     }
     public interface IMusicStartListener {
-        void startMusic(MusicData music);
+        void startMusic(MusicData music, boolean isFromUser);
     }
 
     private List<IMusicStartListener> listeners = new ArrayList<>();
 
     public void addListener(IMusicStartListener l) {
-        Log.d("PlaybackController", "addListener");
         this.listeners.add(l);
+        Log.d("PlaybackController", "addListener, # listeners= "+this.listeners.size());
+    }
+
+    public void clearListeners() {
+        Log.d("PlaybackController", "cleanListeners");
+        this.listeners.clear();
     }
 
     private LinkedList<MusicData> playbackQueue = new LinkedList<>();
     private int index = 0;
 
-    public void start(MusicData song) {
+    public void start(MusicData song, boolean isFromUser) {
+        index = playbackQueue.indexOf(song);
         for (IMusicStartListener listener: listeners) {
-            listener.startMusic(song);
+            listener.startMusic(song, isFromUser);
         }
     }
 

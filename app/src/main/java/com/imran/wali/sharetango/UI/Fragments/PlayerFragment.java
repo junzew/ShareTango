@@ -173,7 +173,7 @@ public class PlayerFragment extends Fragment {
 
         PlaybackController.getInstance().addListener(new PlaybackController.IMusicStartListener() {
             @Override
-            public void startMusic(MusicData music) {
+            public void startMusic(MusicData music, boolean isFromUser) {
                 long albumId = music.albumId;
                 Uri uri = ContentUris.withAppendedId(ARTWORK_URI, albumId);
                 Picasso.with(getActivity())
@@ -197,8 +197,8 @@ public class PlayerFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... params) {
-
-            while (((DashboardActivity)getActivity()).isBound() && !isCancelled()) {
+            DashboardActivity activity = (DashboardActivity) getActivity();
+            while (activity != null && activity.isBound() && !isCancelled()) {
                 if (!mService.isPlaying()) {
                     SystemClock.sleep(500);
                 } else {

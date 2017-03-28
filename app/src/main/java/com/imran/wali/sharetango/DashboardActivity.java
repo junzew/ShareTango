@@ -66,7 +66,7 @@ public class DashboardActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
+        Log.d("DashboardActivity", "onCreate");
         /* Init Toolbar */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -107,7 +107,7 @@ public class DashboardActivity extends AppCompatActivity
                 }
             }
         });
-        
+
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,7 +125,7 @@ public class DashboardActivity extends AppCompatActivity
 
         PlaybackController.getInstance().addListener(new PlaybackController.IMusicStartListener() {
             @Override
-            public void startMusic(MusicData music) {
+            public void startMusic(MusicData music, boolean isFromUser) {
                 // Update the floating player's UI
                 Picasso.with(DashboardActivity.this)
                         .load(ContentUris.withAppendedId(ARTWORK_URI, music.albumId))
@@ -133,7 +133,6 @@ public class DashboardActivity extends AppCompatActivity
                         .into(mAlbumArtImage);
                 mSongTitle.setText(music.getTitle());
                 mPlayButton.setImageResource(R.drawable.pause_button);
-
             }
         });
 
@@ -147,14 +146,14 @@ public class DashboardActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("PlayActivity", "onStart");
+        Log.d("DashboardActivity", "onStart");
         LocalBroadcastManager.getInstance(this).registerReceiver((receiver),
                 new IntentFilter(PlayService.BROADCAST_FILTER));
     }
 
     @Override
     protected void onStop() {
-        Log.d("PlayActivity", "onStop");
+        Log.d("DashboardActivity", "onStop");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         super.onStop();
     }
@@ -322,11 +321,12 @@ public class DashboardActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("PlayActivity", "onDestroy");
+        Log.d("DashboardActivity", "onDestroy");
         if (mBound) {
             mBound = false;
             mService.stopSelf();
             unbindService(mConnection);
         }
+        PlaybackController.getInstance().clearListeners();
     }
 }

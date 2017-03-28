@@ -30,6 +30,10 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     private LocalBroadcastManager broadcaster;
     private boolean fromUser = false; // true if user pressed 'next'/'previous' vs. automatically advance to next
 
+    public void setFromUser(boolean fromUser) {
+        this.fromUser = fromUser;
+    }
+
     public PlayService() {
     }
 
@@ -44,10 +48,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         return mBinder;
     }
 
-
-    @Override
-    public void onCreate() {
-        broadcaster = LocalBroadcastManager.getInstance(this);
+    private void initMediaPlayer() {
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
@@ -60,10 +61,17 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
                 fromUser = false;
             }
         });
+    }
+
+    @Override
+    public void onCreate() {
+        broadcaster = LocalBroadcastManager.getInstance(this);
+        initMediaPlayer();
         PlaybackController.getInstance().addListener(new PlaybackController.IMusicStartListener() {
             @Override
-            public void startMusic(MusicData music) {
+            public void startMusic(MusicData music, boolean isFromUser) {
                 Log.d("PlayService", "startMusic");
+                setFromUser(isFromUser);
                 play(music.id);
             }
         });
@@ -80,26 +88,26 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     public void playNextOrStop(boolean isFromUser) {
         fromUser = isFromUser;
         MusicData nextSong = PlaybackController.getInstance().next();
-        PlaybackController.getInstance().start(nextSong);
         if (nextSong == null) {
             stopSelf();
         } else {
             mMediaPlayer.reset();
             broadcast(nextSong);
-            play(nextSong.id);
+            PlaybackController.getInstance().start(nextSong, isFromUser);
+//            play(nextSong.id);
         }
     }
 
     public void playPrevious(boolean isFromUser) {
         fromUser = isFromUser;
         MusicData previousSong = PlaybackController.getInstance().previous();
-        PlaybackController.getInstance().start(previousSong);
         if (previousSong == null) {
             stopSelf();
         } else {
             mMediaPlayer.reset();
             broadcast(previousSong);
-            play(previousSong.id);
+            PlaybackController.getInstance().start(previousSong, isFromUser);
+//            play(previousSong.id);
         }
     }
 
@@ -113,6 +121,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         Uri contentUri = ContentUris.withAppendedId(
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
         try {
+            mMediaPlayer.reset();
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDataSource(getApplicationContext(), contentUri);
             mMediaPlayer.prepareAsync();
