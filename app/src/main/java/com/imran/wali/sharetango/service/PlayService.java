@@ -3,6 +3,7 @@ package com.imran.wali.sharetango.service;
 /**
  * Created by junze on 2017-01-08.
  */
+
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -43,8 +44,9 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         return mBinder;
     }
 
+
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public void onCreate() {
         broadcaster = LocalBroadcastManager.getInstance(this);
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnPreparedListener(this);
@@ -58,8 +60,20 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
                 fromUser = false;
             }
         });
-        long id = intent.getLongExtra("id", 0);
-        play(id);
+        PlaybackController.getInstance().addListener(new PlaybackController.IMusicStartListener() {
+            @Override
+            public void startMusic(MusicData music) {
+                Log.d("PlayService", "startMusic");
+                play(music.id);
+            }
+        });
+        super.onCreate();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("PlayService", "onStartCommand");
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -96,11 +110,13 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     public void play(long id) {
         Uri contentUri = ContentUris.withAppendedId(
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDataSource(getApplicationContext(), contentUri);
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
             e.printStackTrace();
         }
     }
