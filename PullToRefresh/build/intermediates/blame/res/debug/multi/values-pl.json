@@ -60,5 +60,67 @@
                 }
             }
         ]
+    },
+    {
+        "outputFile": "/Users/vivian/Desktop/ShareTango/PullToRefresh/build/intermediates/incremental/mergeDebugResources/merged.dir/values-pl/values-pl.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 80,
+                    "endOffset": 131
+                },
+                "from": {
+                    "file": "/Users/vivian/Desktop/ShareTango/PullToRefresh/library/res/values-pl/pull_refresh_strings.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 2,
+                        "startOffset": 53,
+                        "endColumn": 78,
+                        "endOffset": 129
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 136,
+                    "endColumn": 73,
+                    "endOffset": 205
+                },
+                "from": {
+                    "file": "/Users/vivian/Desktop/ShareTango/PullToRefresh/library/res/values-pl/pull_refresh_strings.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 2,
+                        "startOffset": 209,
+                        "endColumn": 71,
+                        "endOffset": 278
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 4,
+                    "startColumn": 4,
+                    "startOffset": 210,
+                    "endColumn": 78,
+                    "endOffset": 284
+                },
+                "from": {
+                    "file": "/Users/vivian/Desktop/ShareTango/PullToRefresh/library/res/values-pl/pull_refresh_strings.xml",
+                    "position": {
+                        "startLine": 3,
+                        "startColumn": 2,
+                        "startOffset": 132,
+                        "endColumn": 76,
+                        "endOffset": 206
+                    }
+                }
+            }
+        ]
     }
 ]

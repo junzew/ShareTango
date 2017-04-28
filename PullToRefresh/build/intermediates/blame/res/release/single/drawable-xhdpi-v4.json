@@ -1,5 +1,9 @@
 [
     {
+        "merged": "/Users/vivian/Desktop/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable-xhdpi-v4/indicator_arrow.png",
+        "source": "/Users/vivian/Desktop/ShareTango/PullToRefresh/library/res/drawable-xhdpi/indicator_arrow.png"
+    },
+    {
         "merged": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable-xhdpi-v4/indicator_arrow.png",
         "source": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/drawable-xhdpi/indicator_arrow.png"
     },
@@ -8,7 +12,15 @@
         "source": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/drawable-xhdpi/default_ptr_flip.png"
     },
     {
+        "merged": "/Users/vivian/Desktop/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable-xhdpi-v4/default_ptr_flip.png",
+        "source": "/Users/vivian/Desktop/ShareTango/PullToRefresh/library/res/drawable-xhdpi/default_ptr_flip.png"
+    },
+    {
         "merged": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable-xhdpi-v4/default_ptr_rotate.png",
         "source": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/drawable-xhdpi/default_ptr_rotate.png"
+    },
+    {
+        "merged": "/Users/vivian/Desktop/ShareTango/PullToRefresh/build/intermediates/res/merged/release/drawable-xhdpi-v4/default_ptr_rotate.png",
+        "source": "/Users/vivian/Desktop/ShareTango/PullToRefresh/library/res/drawable-xhdpi/default_ptr_rotate.png"
     }
 ]

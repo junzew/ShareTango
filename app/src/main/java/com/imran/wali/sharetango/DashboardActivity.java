@@ -1,5 +1,6 @@
 package com.imran.wali.sharetango;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentUris;
@@ -7,14 +8,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -33,23 +37,51 @@ import android.widget.TextView;
 
 import com.imran.wali.sharetango.AudioManager.MusicData;
 import com.imran.wali.sharetango.AudioManager.PlaybackController;
+import com.imran.wali.sharetango.DataRepository.MusicDataRepository;
+import com.imran.wali.sharetango.Services.PlayService;
+import com.imran.wali.sharetango.Services.SalutService;
+import com.imran.wali.sharetango.UI.Fragments.AvailableSongsFragment;
+import com.imran.wali.sharetango.UI.Fragments.DownloadedSongsFragment;
+import com.imran.wali.sharetango.UI.Fragments.LocalSongsFragment;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
 import com.imran.wali.sharetango.UI.Fragments.PlayerFragment;
-import com.imran.wali.sharetango.UI.Fragments.SongFragment;
-import com.imran.wali.sharetango.service.PlayService;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
 
-public class DashboardActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SlidingUpPanelLayout.PanelSlideListener{
+public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SalutService.ISalutCallback, SlidingUpPanelLayout.PanelSlideListener {
+
+    Context mContext;
+    private SalutService mSalutService;
+    private boolean mSalutServiceBound = false;
+    private boolean isServiceBound = false;
+    private ServiceConnection mSalutServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            SalutService.SalutBinder binder = (SalutService.SalutBinder) service;
+            mSalutService = (SalutService) binder.getService();
+            isServiceBound = true;
+            mSalutService.setBoundActivity(DashboardActivity.this);
+            startSalutService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            isServiceBound = false;
+        }
+    };
+
+    Timer timer;
+    TimerTask timerTask;
 
     /* Dashboard UI Variables */
     private ViewPager viewPager;
-
 
     /* Dashboard UI Support Variables */
     private ScreenSlidePagerAdapter slidePagerAdapter;
@@ -66,7 +98,26 @@ public class DashboardActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        Log.d("DashboardActivity", "onCreate");
+        mContext = this;
+
+        /* Ask For Permission */
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(mContext,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+
+            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+
+        }
+
+        /* Init Singletons */
+        MusicDataRepository.init(mContext);
+
         /* Init Toolbar */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -80,7 +131,7 @@ public class DashboardActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        /*Init Variables */
+        /* Init Variables */
         viewPager = (ViewPager) findViewById(R.id.dashboard_viewpager);
         slidePagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(slidePagerAdapter);
@@ -138,6 +189,18 @@ public class DashboardActivity extends AppCompatActivity
 
         Log.d("DashboardActivity", "starting PlayService");
         bindPlayService();
+
+        bindSalutService();
+        Log.d("DASHBOARD", "bind service salut");
+    }
+
+    private void startSalutService() {
+        Intent intent = new Intent(this, SalutService.class);
+        startService(intent);
+    }
+    private void bindSalutService() {
+        Intent intent = new Intent(this, SalutService.class);
+        bindService(intent, mSalutServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     private PlayerFragment mPlayerFragment;
@@ -158,11 +221,11 @@ public class DashboardActivity extends AppCompatActivity
         super.onStop();
     }
 
-    private boolean mBound = false;
+    private boolean mPlayServiceBound = false;
     private PlayService mService = null;
 
-    public boolean isBound() {
-        return mBound;
+    public boolean isPlayServiceBound() {
+        return mPlayServiceBound;
     }
 
     public PlayService getPlayService() {
@@ -171,16 +234,16 @@ public class DashboardActivity extends AppCompatActivity
 
     private void bindPlayService() {
         Intent intent = new Intent(this, PlayService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        bindService(intent, mPlayServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private ServiceConnection mPlayServiceConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             PlayService.PlayBinder binder = (PlayService.PlayBinder) service;
             mService = (PlayService) binder.getService();
-            mBound = true;
+            mPlayServiceBound = true;
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             mPlayerFragment = PlayerFragment.newInstance();
@@ -191,13 +254,18 @@ public class DashboardActivity extends AppCompatActivity
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
+            mPlayServiceBound = false;
         }
     };
 
 
-    private SongFragment mSongFragment = (SongFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.SONG);
+//    private SongFragment mSongFragment = (SongFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.SONG);
 
+    @Override
+    public void updateClient() {
+        // receive data from SalutService
+        // TODO
+    }
     @Override
     public void onPanelSlide(View panel, float slideOffset) {
         Log.d("panel", "slide");
@@ -226,32 +294,49 @@ public class DashboardActivity extends AppCompatActivity
                 break;
         }
     }
-//    private ArtistFragment mArtistFragment = (ArtistFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ARTIST);
-//    private AlbumFragment mAlbumFragment = (AlbumFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.ALBUMS);
-//    private GenreFragment mGenreFragment = (GenreFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.GENRE);
 
-    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter{
-        final int PAGE_COUNT = 1;
-//        private String tabTitles[] = new String[] { "Song", "Artist", "Album", "Genre"};
-        private String tabTitles[] = new String[] { "Song"};
-        private Context context;
+//    @Override
+//    public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
+//        System.out.print(wifiP2pInfo.toString());
+//    }
+
+    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
+        final int PAGE_COUNT = 3;
+        private String tabTitles[] = new String[]{"Available", "Downloaded", "Local"}; // Fix this
         private ArrayList<Fragment> fragmentList;
 
-        public ScreenSlidePagerAdapter(FragmentManager fm){
+        ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
+            /* Create Fragments and their arguments */
+            Bundle args = new Bundle();
+            args.putSerializable("type", PagerAdapterTabFragment.PageType.Available);
+            PagerAdapterTabFragment mAvailableSongFragment = new AvailableSongsFragment();
+            mAvailableSongFragment.setArguments(args);
+            args = new Bundle();
+            args.putSerializable("type", PagerAdapterTabFragment.PageType.Downloaded);
+            PagerAdapterTabFragment mDownloadedSongFragment = new DownloadedSongsFragment();
+            mDownloadedSongFragment.setArguments(args);
+            args = new Bundle();
+            args.putSerializable("type", PagerAdapterTabFragment.PageType.Local);
+            PagerAdapterTabFragment mLocalSongFragment = new LocalSongsFragment();
+            mLocalSongFragment.setArguments(args);
             fragmentList = new ArrayList<>();
-            /* Adding All Fragments Here */
-            fragmentList.add(mSongFragment);
-//            fragmentList.add(mArtistFragment);
-//            fragmentList.add(mAlbumFragment);
-//            fragmentList.add(mGenreFragment);
+
+            /* Adding All Fragments Here To Adapter*/
+            fragmentList.add(mAvailableSongFragment);
+            fragmentList.add(mDownloadedSongFragment);
+            fragmentList.add(mLocalSongFragment);
         }
 
         @Override
-        public int getCount() {return PAGE_COUNT;}
+        public int getCount() {
+            return PAGE_COUNT;
+        }
 
         @Override
-        public Fragment getItem(int position) {return fragmentList.get(position);}
+        public Fragment getItem(int position) {
+            return fragmentList.get(position);
+        }
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -260,17 +345,75 @@ public class DashboardActivity extends AppCompatActivity
         }
     }
 
+    /* Wifi Direct Controls */
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
+    //Discover Peer Async
+//    private class DiscoverPeerAsyncTask extends AsyncTask<Void, Void, Void> {
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//            mWifiDirectManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
+//                @Override
+//                public void onSuccess() {
+//                    Toast.makeText(DashboardActivity.this, "Discovery Initiated", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onFailure(int reasonCode) {
+//                    Toast.makeText(DashboardActivity.this, "Discovery Failed : " + reasonCode, Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//            return null;
+//        }
+//    }
 
+//    private class PeerHandlingAsyncTask extends AsyncTask<Object, Void, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Object... params) {
+//            Collection<WifiP2pDevice> deviceList = (Collection<WifiP2pDevice>) params[0];
+//            // Get Devices To Remove
+//            ArrayList<WifiP2pDevice> devicesToRemove = wifiClientRepository.getListOfDevicesToRemove(deviceList);
+//            // Get Devices to Add
+//            //ArrayList<WifiP2pDevice> devicesToAdd = wifiClientRepository.getListOfDevicesToAdd(deviceList);
+//            // Add new DeviceList to Repository
+//            wifiClientRepository.setActiveList(deviceList);
+//            // Remove Songs from Available for "devicesToRemove" peers
+//            // TODO: Remove this!
+//            // For each peer, ask for their music data
+//            //for(WifiP2pDevice device : wifiClientRepository.getActiveList()){
+//            if (!wifiClientRepository.getActiveList().isEmpty()) {
+//                WifiP2pConfig config = new WifiP2pConfig();
+//                config.deviceAddress = wifiClientRepository.getActiveList().get(0).deviceAddress;
+//                config.wps.setup = WpsInfo.PBC;
+//                mWifiDirectManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+//
+//                    @Override
+//                    public void onSuccess() {
+//                        Toast.makeText(DashboardActivity.this, "Connect Success. ",
+//                                Toast.LENGTH_SHORT).show();
+//                        // WiFiDirectBroadcastReceiver will notify us. Ignore for now.
+//                    }
+//
+//                    @Override
+//                    public void onFailure(int reason) {
+//                        Toast.makeText(DashboardActivity.this, "Connect failed. Retry.",
+//                                Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//
+//            //}
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void v) {
+//
+//        }
+//    }
+
+
+    /* Menu Control Overrides */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -318,15 +461,33 @@ public class DashboardActivity extends AppCompatActivity
         return true;
     }
 
+    /* Activity Control Overrides */
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        Log.d("DashboardActivity", "onDestroy");
-        if (mBound) {
-            mBound = false;
+        /* unregister the wifi direct broadcast receiver */
+        //unregisterReceiver(mReceiver);
+        /* cancel timer if pausing activity */
+       // timer.cancel();
+        /* close the music list providing Thread */
+        //WifiMusicListProviderService.cancel(true);
+        if (mPlayServiceBound) {
+            mPlayServiceBound = false;
             mService.stopSelf();
-            unbindService(mConnection);
+            unbindService(mPlayServiceConnection);
         }
         PlaybackController.getInstance().clearListeners();
+        unbindService(mSalutServiceConnection);
+        super.onDestroy();
     }
+
 }

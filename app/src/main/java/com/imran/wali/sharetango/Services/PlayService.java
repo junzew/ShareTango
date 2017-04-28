@@ -1,9 +1,8 @@
-package com.imran.wali.sharetango.service;
+package com.imran.wali.sharetango.Services;
 
 /**
  * Created by junze on 2017-01-08.
  */
-
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -29,6 +28,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     private IBinder mBinder = new PlayBinder();
     private LocalBroadcastManager broadcaster;
     private boolean fromUser = false; // true if user pressed 'next'/'previous' vs. automatically advance to next
+    private float curVolume = 1; // between [0,1] initialize to max
 
     public void setFromUser(boolean fromUser) {
         this.fromUser = fromUser;
@@ -111,6 +111,18 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
+    public void shuffle(boolean isFromUser){
+        fromUser = isFromUser;
+        MusicData nextSong = PlaybackController.getInstance().shuffle();
+        if (nextSong == null) {
+            stopSelf();
+        } else {
+            mMediaPlayer.reset();
+            broadcast(nextSong);
+            play(nextSong.id);
+        }
+    }
+
     @Override
     public void onPrepared(MediaPlayer mp) {
         mp.start();
@@ -120,16 +132,25 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     public void play(long id) {
         Uri contentUri = ContentUris.withAppendedId(
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
-            mMediaPlayer.reset();
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDataSource(getApplicationContext(), contentUri);
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
         }
+    }
+
+    public void volume(float leftVolume, float rightVolume){
+        mMediaPlayer.setVolume(leftVolume, rightVolume);}
+    public void setCurrVolume(float volume){
+        if (volume == Float.POSITIVE_INFINITY) {
+            volume = 1;
+        }
+        curVolume = volume;
+    }
+    public float getCurrVolume(){
+        return curVolume;
     }
 
     public void pause() {
@@ -140,6 +161,10 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     }
     public void stop() {
         mMediaPlayer.stop();
+    }
+    public void restart(){
+        mMediaPlayer.seekTo(0);
+        mMediaPlayer.start();
     }
     public int currentPosition() {
         return mMediaPlayer.getCurrentPosition();

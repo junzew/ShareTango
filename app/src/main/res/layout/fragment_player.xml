@@ -36,13 +36,13 @@
 
             <ImageView android:id="@+id/previous" android:layout_width="36dp"
                 android:layout_height="36dp" android:layout_marginRight="48dp"
-                android:src="@drawable/previous" />
+                android:src="@drawable/skip_prev" />
             <ImageView android:id="@+id/play_button" android:layout_width="64dp"
                 android:layout_height="64dp" android:src="@drawable/pause_button" />
 
             <ImageView android:id="@+id/next" android:layout_width="36dp"
                 android:layout_height="36dp" android:layout_marginLeft="48dp"
-                android:src="@drawable/next" />
+                android:src="@drawable/skip_next" />
 
         </LinearLayout>
 

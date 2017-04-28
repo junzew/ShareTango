@@ -20,10 +20,12 @@ import com.imran.wali.sharetango.AudioManager.MusicData;
 import com.imran.wali.sharetango.AudioManager.PlaybackController;
 import com.imran.wali.sharetango.DashboardActivity;
 import com.imran.wali.sharetango.R;
-import com.imran.wali.sharetango.service.PlayService;
+import com.imran.wali.sharetango.Services.PlayService;
 import com.squareup.picasso.Picasso;
 
 import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
+
+//import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -198,7 +200,7 @@ public class PlayerFragment extends Fragment {
         @Override
         protected String doInBackground(Void... params) {
             DashboardActivity activity = (DashboardActivity) getActivity();
-            while (activity != null && activity.isBound() && !isCancelled()) {
+            while (activity != null && activity.isPlayServiceBound() && !isCancelled()) {
                 if (!mService.isPlaying()) {
                     SystemClock.sleep(500);
                 } else {

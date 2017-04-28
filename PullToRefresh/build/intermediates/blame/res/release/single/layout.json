@@ -1,7 +1,15 @@
 [
     {
+        "merged": "/Users/vivian/Desktop/ShareTango/PullToRefresh/build/intermediates/res/merged/release/layout/pull_to_refresh_header_horizontal.xml",
+        "source": "/Users/vivian/Desktop/ShareTango/PullToRefresh/library/res/layout/pull_to_refresh_header_horizontal.xml"
+    },
+    {
         "merged": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/build/intermediates/res/merged/release/layout/pull_to_refresh_header_horizontal.xml",
         "source": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/library/res/layout/pull_to_refresh_header_horizontal.xml"
+    },
+    {
+        "merged": "/Users/vivian/Desktop/ShareTango/PullToRefresh/build/intermediates/res/merged/release/layout/pull_to_refresh_header_vertical.xml",
+        "source": "/Users/vivian/Desktop/ShareTango/PullToRefresh/library/res/layout/pull_to_refresh_header_vertical.xml"
     },
     {
         "merged": "/Users/junze/Documents/Development/ShareTango/PullToRefresh/build/intermediates/res/merged/release/layout/pull_to_refresh_header_vertical.xml",

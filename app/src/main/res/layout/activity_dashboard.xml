@@ -74,7 +74,7 @@
                 android:layout_width="68dp"
                 android:layout_height="68dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/next" />
+                android:src="@drawable/skip_next" />
         </LinearLayout>
 
         <FrameLayout

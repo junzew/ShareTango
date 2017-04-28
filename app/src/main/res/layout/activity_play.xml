@@ -19,39 +19,76 @@
         android:id="@+id/song_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/album"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:textSize="18sp"
-        android:singleLine="true"
+        android:ellipsize="marquee"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
-        android:layout_below="@id/album" />
+        android:singleLine="true"
+        android:text="Sample Song Name"
+        android:textSize="18sp" />
+
 
     <SeekBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/song_title"
-        android:id="@+id/progress"
-        android:layout_marginTop="10dp"
-        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_marginTop="40dp"
         android:max="100" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:gravity="right">
+
+
+    <ImageView
+        android:id="@+id/volume"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@drawable/volume"
+     />
+    <SeekBar
+        android:id="@+id/volume_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:max="100"
+        android:progress="100"/>
+
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/buttons"
-        android:layout_below="@id/progress"
-        android:layout_centerHorizontal="true"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_below="@+id/progress"
+        android:layout_alignParentStart="true">
 
         <ImageView
+            android:id="@+id/favorite"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:id="@+id/previous"
-            android:src="@drawable/previous"
-            android:layout_marginRight="48dp"/>
+            android:src="@drawable/favorite"
+            android:layout_marginRight="40dp"
+            />
+
+        <ImageView
+            android:id="@+id/skip_prev"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/skip_prev"
+            android:layout_marginRight="10dp"/>
+
         <ImageView
             android:id="@+id/play_button"
             android:layout_width="64dp"
@@ -59,12 +96,19 @@
             android:src="@drawable/pause_button" />
 
         <ImageView
+            android:id="@+id/skip_next"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/skip_next"
+            android:layout_marginLeft="10dp"/>
+
+        <ImageView
+            android:id="@+id/repeat"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/next"
-            android:id="@+id/next"
-            android:layout_marginLeft="48dp"/>
-
+            android:src="@drawable/repeat"
+            android:layout_marginLeft="42dp"
+            />
     </LinearLayout>
 
 </RelativeLayout>
