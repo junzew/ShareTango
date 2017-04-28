@@ -40,8 +40,6 @@ public class PlaybackController {
 
     private LinkedList<MusicData> playbackQueue = new LinkedList<>();
     private int index = 0;
-    int size =0;
-    boolean isRandom = false;
 
     public void start(MusicData song, boolean isFromUser) {
         index = playbackQueue.indexOf(song);
@@ -55,7 +53,7 @@ public class PlaybackController {
     }
 
     public MusicData shuffle() {
-        index = (int) (Math.random()*size);
+        index = (int) (Math.random()*playbackQueue.size());
         return playbackQueue.get(index);
     }
 
