@@ -11,6 +11,7 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.imran.wali.sharetango.AudioManager.MusicData;
+import com.imran.wali.sharetango.AudioManager.PlaybackController;
 import com.imran.wali.sharetango.DataRepository.MusicDataRepository;
 import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
@@ -161,8 +162,15 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer,
         @Override
         protected void onPostExecute(ArrayList<MusicData> list){
             dataHolder = list;
+            addToQueue();
             notifyDataSetChanged();
         }
 
+    }
+    private void addToQueue() {
+        PlaybackController.getInstance().clear();
+        for (MusicData data : dataHolder) {
+            PlaybackController.getInstance().enqueue(data);
+        }
     }
 }
