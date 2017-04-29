@@ -257,21 +257,24 @@ public class FastBlurUtil {
 
         Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
 
-        final float widthHeightSize = (float) (DisplayUtil.getScreenWidth(context)
-                *1.0 / DisplayUtil.getScreenHeight(context) * 1.0);
+//        final float widthHeightSize = (float) (DisplayUtil.getScreenWidth(context)
+//                *1.0 / DisplayUtil.getScreenHeight(context) * 1.0);
+//
+//        int cropBitmapWidth = (int) (widthHeightSize * bitmap.getHeight());
+//        cropBitmapWidth = (int) ((bitmap.getWidth() - cropBitmapWidth) / 2.0);
+//
+//        Bitmap cropBitmap = Bitmap.createBitmap(bitmap, cropBitmapWidth, 0, cropBitmapWidth,
+//                bitmap.getHeight());
 
-        int cropBitmapWidth = (int) (widthHeightSize * bitmap.getHeight());
-        cropBitmapWidth = (int) ((bitmap.getWidth() - cropBitmapWidth) / 2.0);
+        int blurRadius = 32;
+        int scaleFactor = 16;
 
-        Bitmap cropBitmap = Bitmap.createBitmap(bitmap, cropBitmapWidth, 0, cropBitmapWidth,
-                bitmap.getHeight());
+        Bitmap scaleBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / scaleFactor, bitmap
+                .getHeight() / scaleFactor, false);
 
-        Bitmap scaleBitmap = Bitmap.createScaledBitmap(cropBitmap, bitmap.getWidth() / 50, bitmap
-                .getHeight() / 50, false);
-
-        final Bitmap blurBitmap = FastBlurUtil.doBlur(scaleBitmap, 8, true);
+        final Bitmap blurBitmap = FastBlurUtil.doBlur(scaleBitmap, blurRadius, true);
         final Drawable foregroundDrawable = new BitmapDrawable(blurBitmap);
-        foregroundDrawable.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+        foregroundDrawable.setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
         return foregroundDrawable;
     }
 

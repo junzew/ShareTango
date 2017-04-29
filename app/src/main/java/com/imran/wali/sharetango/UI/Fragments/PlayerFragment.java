@@ -217,6 +217,7 @@ public class PlayerFragment extends Fragment {
                         .into(mAlbumArtImage);
                 String songTitle = music.getTitle();
                 mAlbumTitle.setText(songTitle);
+                mAlbumTitle.setSelected(true); // marquee text
                 task = new UpdateSeekBarProgressTask();
                 task.execute();
 

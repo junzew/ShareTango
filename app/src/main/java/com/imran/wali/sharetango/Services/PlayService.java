@@ -119,7 +119,8 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         } else {
             mMediaPlayer.reset();
             broadcast(nextSong);
-            play(nextSong.id);
+            PlaybackController.getInstance().start(nextSong, isFromUser);
+//            play(nextSong.id);
         }
     }
 

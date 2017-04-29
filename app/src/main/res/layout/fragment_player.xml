@@ -35,7 +35,9 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
             android:singleLine="true"
+            android:freezesText="true"
             android:textColor="@color/song_name"
             android:textSize="18sp" />
 
@@ -103,11 +105,12 @@
             android:id="@+id/volume_control"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
             android:layout_above="@id/buttons"
             android:orientation="horizontal"
             android:layout_alignParentEnd="true"
-            android:gravity="right"
+            android:gravity="center"
             >
 
             <ImageView

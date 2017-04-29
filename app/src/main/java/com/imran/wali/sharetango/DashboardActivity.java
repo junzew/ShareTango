@@ -57,6 +57,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
+import static com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.COLLAPSED;
+import static com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.EXPANDED;
 
 public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SalutService.ISalutCallback, SlidingUpPanelLayout.PanelSlideListener {
 
@@ -188,6 +190,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                         .placeholder(R.drawable.track_ablumart_placeholder)
                         .into(mAlbumArtImage);
                 mSongTitle.setText(music.getTitle());
+                mSongTitle.setSelected(true); // marquee text
                 mPlayButton.setImageResource(R.drawable.pause_button);
 
                 try {
@@ -479,6 +482,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (mSlidingUpPanelLayout.getPanelState() == EXPANDED) {
+            mSlidingUpPanelLayout.setPanelState(COLLAPSED);
         } else {
             super.onBackPressed();
         }
