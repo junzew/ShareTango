@@ -2,6 +2,7 @@ package com.imran.wali.sharetango.UI.Fragments;
 
 import android.content.ContentUris;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -21,7 +23,10 @@ import com.imran.wali.sharetango.AudioManager.PlaybackController;
 import com.imran.wali.sharetango.DashboardActivity;
 import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.Services.PlayService;
+import com.imran.wali.sharetango.Utility.FastBlurUtil;
 import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
 
 import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
 
@@ -39,6 +44,8 @@ public class PlayerFragment extends Fragment {
 
 
     private OnFragmentInteractionListener mListener;
+
+    LinearLayout mRootLayout;
 
     ImageView mPlayImage;
     ImageView mAlbumArtImage;
@@ -134,6 +141,7 @@ public class PlayerFragment extends Fragment {
         mSeekBar = (SeekBar) view.findViewById(R.id.progress);
         mPreviousButton = (ImageView) view.findViewById(R.id.previous);
         mNextButton = (ImageView) view.findViewById(R.id.next);
+        mRootLayout = (LinearLayout) view.findViewById(R.id.dragView);
 
         mPreviousButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -211,6 +219,14 @@ public class PlayerFragment extends Fragment {
                 mAlbumTitle.setText(songTitle);
                 task = new UpdateSeekBarProgressTask();
                 task.execute();
+
+                // TODO Update background of root layout
+                try {
+                    Drawable background = FastBlurUtil.getBlurredBackgroundDrawable(uri, getActivity());
+                    mRootLayout.setBackground(background);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 

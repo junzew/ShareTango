@@ -134,6 +134,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
+            mMediaPlayer.reset();
             mMediaPlayer.setDataSource(getApplicationContext(), contentUri);
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {

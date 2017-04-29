@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.NavigationView;
@@ -45,9 +47,11 @@ import com.imran.wali.sharetango.UI.Fragments.DownloadedSongsFragment;
 import com.imran.wali.sharetango.UI.Fragments.LocalSongsFragment;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
 import com.imran.wali.sharetango.UI.Fragments.PlayerFragment;
+import com.imran.wali.sharetango.Utility.FastBlurUtil;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -178,12 +182,20 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             @Override
             public void startMusic(MusicData music, boolean isFromUser) {
                 // Update the floating player's UI
+                Uri uri = ContentUris.withAppendedId(ARTWORK_URI, music.albumId);
                 Picasso.with(DashboardActivity.this)
-                        .load(ContentUris.withAppendedId(ARTWORK_URI, music.albumId))
+                        .load(uri)
                         .placeholder(R.drawable.track_ablumart_placeholder)
                         .into(mAlbumArtImage);
                 mSongTitle.setText(music.getTitle());
                 mPlayButton.setImageResource(R.drawable.pause_button);
+
+                try {
+                    Drawable backgroundDrawable = FastBlurUtil.getBlurredBackgroundDrawable(uri, DashboardActivity.this);
+                    mFloatingPlayer.setBackground(backgroundDrawable);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -269,7 +281,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     @Override
     public void onPanelSlide(View panel, float slideOffset) {
         Log.d("panel", "slide");
-        mFloatingPlayer.setVisibility(View.INVISIBLE);
+        mFloatingPlayer.setVisibility(View.GONE);
     }
 
     @Override
@@ -277,7 +289,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         switch (newState) {
             case EXPANDED:
                 Log.d("panel", "expanded");
-                mFloatingPlayer.setVisibility(View.INVISIBLE);
+                mFloatingPlayer.setVisibility(View.GONE);
                 break;
             case COLLAPSED:
                 Log.d("panel", "collapsed");
