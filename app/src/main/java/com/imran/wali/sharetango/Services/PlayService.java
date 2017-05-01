@@ -15,8 +15,8 @@ import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.imran.wali.sharetango.AudioManager.MusicData;
-import com.imran.wali.sharetango.AudioManager.PlaybackController;
+import com.imran.wali.sharetango.audiomanager.MusicData;
+import com.imran.wali.sharetango.audiomanager.PlaybackController;
 
 import java.io.IOException;
 

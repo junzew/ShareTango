@@ -1,4 +1,4 @@
-package com.imran.wali.sharetango.AudioManager;
+package com.imran.wali.sharetango.audiomanager;
 
 import android.util.Log;
 

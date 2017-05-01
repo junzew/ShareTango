@@ -37,9 +37,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.imran.wali.sharetango.AudioManager.MusicData;
-import com.imran.wali.sharetango.AudioManager.PlaybackController;
-import com.imran.wali.sharetango.DataRepository.MusicDataRepository;
 import com.imran.wali.sharetango.Services.PlayService;
 import com.imran.wali.sharetango.Services.SalutService;
 import com.imran.wali.sharetango.UI.Fragments.AvailableSongsFragment;
@@ -48,6 +45,9 @@ import com.imran.wali.sharetango.UI.Fragments.LocalSongsFragment;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
 import com.imran.wali.sharetango.UI.Fragments.PlayerFragment;
 import com.imran.wali.sharetango.Utility.FastBlurUtil;
+import com.imran.wali.sharetango.audiomanager.MusicData;
+import com.imran.wali.sharetango.audiomanager.PlaybackController;
+import com.imran.wali.sharetango.datarepository.MusicDataRepository;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
 
@@ -216,6 +216,9 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private void bindSalutService() {
         Intent intent = new Intent(this, SalutService.class);
         bindService(intent, mSalutServiceConnection, Context.BIND_AUTO_CREATE);
+    }
+    public SalutService getSalutService() {
+        return mSalutService;
     }
 
     private PlayerFragment mPlayerFragment;

@@ -10,11 +10,11 @@ import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
-import com.imran.wali.sharetango.AudioManager.MusicData;
-import com.imran.wali.sharetango.AudioManager.PlaybackController;
-import com.imran.wali.sharetango.DataRepository.MusicDataRepository;
 import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
+import com.imran.wali.sharetango.audiomanager.MusicData;
+import com.imran.wali.sharetango.audiomanager.PlaybackController;
+import com.imran.wali.sharetango.datarepository.MusicDataRepository;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -172,5 +172,10 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer,
         for (MusicData data : dataHolder) {
             PlaybackController.getInstance().enqueue(data);
         }
+    }
+
+    public void add(MusicData data) {
+        this.dataHolder.add(data);
+        notifyDataSetChanged();
     }
 }

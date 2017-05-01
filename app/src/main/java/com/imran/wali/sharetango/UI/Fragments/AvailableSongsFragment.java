@@ -7,12 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
 
 import com.imran.wali.sharetango.DashboardActivity;
 import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.IndexableListAdapter;
+import com.imran.wali.sharetango.UI.Elements.IndexableListView.IndexableListView;
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.PullToRefreshIndexableListView;
+import com.imran.wali.sharetango.audiomanager.MusicData;
+import com.imran.wali.sharetango.datarepository.MusicDataRepository;
 import com.karumi.dexter.PermissionToken;
 
 /**
@@ -23,8 +25,9 @@ public class AvailableSongsFragment extends PagerAdapterTabFragment {
 
     private PagerAdapterTabFragment.PageType pageType;
     private DashboardActivity mContext;
-    private PullToRefreshIndexableListView listView;
-    private ListAdapter adapter;
+    private PullToRefreshIndexableListView pullToRefreshIndexableListView;
+    private IndexableListView listView;
+    private IndexableListAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,22 +35,25 @@ public class AvailableSongsFragment extends PagerAdapterTabFragment {
         mContext = (DashboardActivity) getActivity();
         adapter = new IndexableListAdapter(mContext, PagerAdapterTabFragment.PageType.Available);
         //fetchSongs();
+        MusicDataRepository.getInstance().registerAvilableMusicDataFragment(adapter);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.non_indexable_songs_fragment, container, false);
-        listView =  (PullToRefreshIndexableListView) view.findViewById(R.id.pull_to_refresh_lv);
-//        listView.setAdapter(adapter);
-//        //listView.setFastScrollEnabled(true);
-//        listView.setOnItemClickListener(songClickListener);
+        View view = inflater.inflate(R.layout.indexable_songs_fragment, container, false);
+        pullToRefreshIndexableListView =  (PullToRefreshIndexableListView) view.findViewById(R.id.pull_to_refresh_lv);
+        listView = pullToRefreshIndexableListView.getRefreshableView();
+        listView.setAdapter(adapter);
+        listView.setFastScrollEnabled(true);
+        listView.setOnItemClickListener(songClickListener);
         return view;
     }
 
     private AdapterView.OnItemClickListener songClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            //MusicData song = adapter.getItem(position);
+            MusicData song = adapter.getItem(position);
+            ((DashboardActivity)getActivity()).getSalutService().request(song);
             //PlaybackController.start(getActivity(), song);
         }
     };

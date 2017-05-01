@@ -11,14 +11,14 @@ import android.widget.Toast;
 
 import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.imran.wali.sharetango.AudioManager.MusicData;
-import com.imran.wali.sharetango.AudioManager.PlaybackController;
 import com.imran.wali.sharetango.DashboardActivity;
-import com.imran.wali.sharetango.DataRepository.MusicDataRepository;
 import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.IndexableListAdapter;
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.IndexableListView;
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.PullToRefreshIndexableListView;
+import com.imran.wali.sharetango.audiomanager.MusicData;
+import com.imran.wali.sharetango.audiomanager.PlaybackController;
+import com.imran.wali.sharetango.datarepository.MusicDataRepository;
 import com.karumi.dexter.PermissionToken;
 
 /**

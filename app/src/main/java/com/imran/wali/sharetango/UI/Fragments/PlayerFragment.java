@@ -18,12 +18,12 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.imran.wali.sharetango.AudioManager.MusicData;
-import com.imran.wali.sharetango.AudioManager.PlaybackController;
 import com.imran.wali.sharetango.DashboardActivity;
 import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.Services.PlayService;
 import com.imran.wali.sharetango.Utility.FastBlurUtil;
+import com.imran.wali.sharetango.audiomanager.MusicData;
+import com.imran.wali.sharetango.audiomanager.PlaybackController;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;

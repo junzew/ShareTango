@@ -2,7 +2,7 @@ package com.imran.wali.sharetango.Wifi;
 
 import android.util.Log;
 
-import com.imran.wali.sharetango.DataRepository.MusicDataRepository;
+import com.imran.wali.sharetango.datarepository.MusicDataRepository;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
