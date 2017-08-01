@@ -1,4 +1,4 @@
-package com.imran.wali.sharetango.DataRepository;
+package com.imran.wali.sharetango.datarepository;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -7,7 +7,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 
-import com.imran.wali.sharetango.AudioManager.MusicData;
+import com.imran.wali.sharetango.UI.Elements.IndexableListView.IndexableListAdapter;
+import com.imran.wali.sharetango.audiomanager.MusicData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,7 +136,7 @@ public class MusicDataRepository {
                 musicData.path = cursor.getString(cursor.getColumnIndex("_data"));
                 int songId = cursor.getInt(cursor.getColumnIndex("_id"));
                 musicData.albumArtURIString = "content://media/external/audio/media/" + songId + "/albumart";
-                musicData.duration = " ";
+                musicData.duration = cursor.getString(cursor.getColumnIndex("duration"));;
                 musicData.id = songId;
                 musicData.albumId = cursor.getLong(cursor.getColumnIndex("album_id"));
                 data.add(musicData);
@@ -170,4 +171,12 @@ public class MusicDataRepository {
         }
     }
 
+
+    public void addAvailableMusicData(MusicData data) {
+        availableFragmentAdapter.add(data);
+    }
+    private IndexableListAdapter availableFragmentAdapter;
+    public void registerAvilableMusicDataFragment(IndexableListAdapter adapter) {
+        availableFragmentAdapter = adapter;
+    }
 }

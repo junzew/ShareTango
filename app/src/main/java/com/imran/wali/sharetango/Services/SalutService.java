@@ -65,6 +65,7 @@ public class SalutService extends Service implements SalutDataCallback {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand");
         /* Salut Init */
         salutDataReceiver = new SalutDataReceiver(mActivity, this);
 
@@ -73,7 +74,8 @@ public class SalutService extends Service implements SalutDataCallback {
         network = new Salut(salutDataReceiver, serviceData, new SalutCallback() {
             @Override
             public void call() {
-                System.out.println("YOUR DEVICE SUCKS");
+                Log.d(TAG, "YOUR DEVICE SUCKS");
+                Log.d(TAG, "Device not supported");
             }
         });
          /* Discover hosts*/
@@ -87,6 +89,7 @@ public class SalutService extends Service implements SalutDataCallback {
     @Override
     public void onDataReceived(Object data) {
         Log.d(TAG, "Received network data.");
+        Log.d(TAG, data.toString());
         try {
             Packet pkt = LoganSquare.parse((String) data, Packet.class);
             // discard packet if destination device name doesn't match
@@ -115,6 +118,7 @@ public class SalutService extends Service implements SalutDataCallback {
      * An actual song has been received
      */
     private void onSongReceived(Packet pkt) {
+        Log.d(TAG, "onSongReceived");
         String base64 = pkt.getBase64string();
         try {
             // TODO: should be stored in a specific folder and deleted later
@@ -130,6 +134,7 @@ public class SalutService extends Service implements SalutDataCallback {
      * handler when song owner receives a request for a song
      */
     private void onReceiveRequestForSong(Packet pkt) throws IOException {
+        Log.d(TAG, "onReceiveRequestForSong");
         // this is the song owner
         MusicData songToRequest = pkt.getMusicData();
         // TODO find songToRequest locally and encode to Base 64
@@ -156,6 +161,7 @@ public class SalutService extends Service implements SalutDataCallback {
      * handler when a new list of MusicData is received
      */
     private void onNewSongListReceived(Packet pkt) {
+        Log.d(TAG, "onNewSongListReceived");
         List<MusicData> songList = pkt.getSongList();
         if (network.isRunningAsHost) {
             for (MusicData s : songList) {
@@ -186,6 +192,7 @@ public class SalutService extends Service implements SalutDataCallback {
     }
 
     public void setupNetwork() {
+        Log.d(TAG, "setting up network...");
         if (!network.isRunningAsHost) {
             network.startNetworkService(new SalutDeviceCallback() {
                 @Override
@@ -200,23 +207,25 @@ public class SalutService extends Service implements SalutDataCallback {
     }
 
     public void isHostServiceAvailable() {
+        Log.d(TAG, "Is Host Service Available?");
         if (!network.isRunningAsHost && !network.isDiscovering) {
             SalutCallback ifHostIsFound = new SalutCallback() {
                 @Override
                 public void call() {
-                    System.out.println("Make Connection with host cos you found HOST.");
+                    Log.d(TAG, "Make Connection with host cos you found HOST.");
                     // DEVICE MAINTAINABLE AREA
 
                     SalutCallback onRegisterSuccess = new SalutCallback() {
                         @Override
                         public void call() {
-                            System.out.println("REGISTER SUCCESSS... SENDING MESSAGE");
+                            Log.d(TAG, "REGISTER SUCCESSS... SENDING song list to host");
 
                             // TODO send message
 //                            Message message = new Message();
 //                            message.lol = "Wali";
                             /** send client's local song list to the host */
                             List<MusicData> localSongList = MusicDataRepository.getInstance().getList();
+                            Log.d(TAG, localSongList.toString());
                             Packet pkt = new Packet();
                             // put a 'stamp' on the song title
                             for (MusicData data : localSongList) {
@@ -238,7 +247,7 @@ public class SalutService extends Service implements SalutDataCallback {
                     SalutCallback onRegisterFaliure = new SalutCallback() {
                         @Override
                         public void call() {
-                            System.out.println("WE FUCKED UP");
+                            Log.d(TAG, "WE FUCKED UP");
                         }
                     };
                     network.registerWithHost(network.foundDevices.get(0), onRegisterSuccess, onRegisterFaliure);
@@ -247,8 +256,8 @@ public class SalutService extends Service implements SalutDataCallback {
             SalutCallback ifHostIsNotFound = new SalutCallback() {
                 @Override
                 public void call() {
+                    Log.d(TAG, "Host not found, starting service");
                     setupNetwork();
-                    System.out.println("Host not found, starting service");
                 }
             };
 
@@ -267,6 +276,7 @@ public class SalutService extends Service implements SalutDataCallback {
      * Request a song
      */
     public void request(MusicData song) {
+        Log.d(TAG, "request a song");
         if (network.isRunningAsHost) {
             SalutDevice songOwner = findDestinationDevice(map.get(song));
             Packet packet = new Packet();
@@ -301,7 +311,13 @@ public class SalutService extends Service implements SalutDataCallback {
     // helper to return the device with a specific device name
     private SalutDevice findDestinationDevice(String destDeviceName) {
         SalutDevice destinationDevice = null;
-        for (SalutDevice device : network.foundDevices) {
+        ArrayList<SalutDevice> devices;
+        if (network.isRunningAsHost) {
+            devices = network.registeredClients;
+        } else {
+            devices = network.foundDevices;
+        }
+        for (SalutDevice device : devices) {
             if (device.deviceName.equals(destDeviceName)) {
                 destinationDevice = device;
                 break;

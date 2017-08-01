@@ -1,4 +1,4 @@
-package com.imran.wali.sharetango.DataRepository;
+package com.imran.wali.sharetango.datarepository;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
