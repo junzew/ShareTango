@@ -167,6 +167,7 @@ public class SalutService extends Service implements SalutDataCallback {
         SalutDevice clientDevice = pkt.getSrcDevice();
 
         Log.d(TAG, "client device " + clientDevice);
+        fixServiceAddress(clientDevice);
 
         Packet response = new Packet();
         response.setMusicData(songToRequest);
@@ -195,6 +196,27 @@ public class SalutService extends Service implements SalutDataCallback {
                         }
                     }
             );
+        }
+    }
+
+    private void fixServiceAddress(SalutDevice clientDevice) {
+        if (clientDevice.serviceAddress == null) {
+            if (network.isRunningAsHost) {
+                for (SalutDevice d: network.registeredClients) {
+                    if (clientDevice.deviceName.equals(d.deviceName)) {
+                        clientDevice.serviceAddress = d.serviceAddress;
+                        break;
+                    }
+                }
+            } else {
+                for (SalutDevice d: network.foundDevices) {
+                    if (clientDevice.deviceName.equals(d.deviceName)) {
+                        clientDevice.serviceAddress = d.serviceAddress;
+                        break;
+                    }
+                }
+
+            }
         }
     }
 
@@ -247,13 +269,23 @@ public class SalutService extends Service implements SalutDataCallback {
             // stop host
             network.disconnectFromDevice();
             network.forceDisconnect();
-            // TODO use another version here !!!
+            // TODO use another version here
             network.startNetworkService(new SalutDeviceCallback() {
                 @Override
                 public void call(SalutDevice salutDevice) {
-                    Log.d(TAG, "Host: "+salutDevice.deviceName+" is connected");
+                    Log.d(TAG, "Host: " + salutDevice.deviceName + " is connected");
                     Log.e(TAG, network.thisDevice.toString());
                     Toast.makeText(getApplicationContext(), "Device: " + salutDevice.deviceName + " connected.", Toast.LENGTH_SHORT).show();
+                }
+            }, new SalutCallback() /* on success */ {
+                @Override
+                public void call() {
+                    Toast.makeText(getApplicationContext(), "Network created", Toast.LENGTH_SHORT).show();
+                }
+            }, new SalutCallback() /* on failure*/ {
+                @Override
+                public void call() {
+                    Toast.makeText(getApplicationContext(), "Failed to create network", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
@@ -351,6 +383,7 @@ public class SalutService extends Service implements SalutDataCallback {
     }
 
     public void request(MusicData song) {
+        Toast.makeText(getApplicationContext(), "Downloading...", Toast.LENGTH_SHORT).show();
         request(song, null);
     }
     /**
@@ -360,6 +393,10 @@ public class SalutService extends Service implements SalutDataCallback {
         Log.d(TAG, "request a song");
         if (network.isRunningAsHost) {
             SalutDevice songOwner = getDeviceFromName(map.get(song));
+            if (songOwner == null) {
+                Toast.makeText(getApplicationContext(), "Request Failed", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Log.d(TAG, "songOwner of "+song.toString() +" is " + songOwner.toString());
             if (fromDevice != null && songOwner.deviceName.equals(fromDevice.deviceName)) {
                 // the requested song is on the fromDevice
@@ -371,6 +408,11 @@ public class SalutService extends Service implements SalutDataCallback {
             packet.setMusicData(song);// the song to request
             if (fromDevice == null) {
                 packet.setSrcDevice(network.thisDevice);
+                SalutDevice device = getDeviceFromName(network.thisDevice.deviceName);
+                if (device == null) {
+                    Toast.makeText(getApplicationContext(), "Request failed", Toast.LENGTH_SHORT).show();
+                }
+                packet.setSrcDevice(device);
             } else {
                 packet.setSrcDevice(fromDevice);
             }

@@ -29,7 +29,7 @@ public class SalutDevice {
     @JsonField
     protected String macAddress;
     @JsonField
-    protected String serviceAddress;
+    public String serviceAddress;
 
     public SalutDevice() {
     }
