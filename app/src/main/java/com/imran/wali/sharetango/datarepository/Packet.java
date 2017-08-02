@@ -16,8 +16,6 @@ import java.util.List;
 public class Packet {
     @JsonField public MusicData mMusicData;
     @JsonField public String base64string;
-    @JsonField public String sourceDviceName; // TODO get rid of these two fields
-    @JsonField public String destinationDviceName; // TODO get rid of these two fields
     @JsonField public List<MusicData> songList;
     @JsonField(typeConverter = MessageTypeConverter.class) public MessageType transactionType;
     @JsonField public SalutDevice srcDevice;
@@ -100,22 +98,6 @@ public class Packet {
 
     public void setMusicData(MusicData musicData) {
         mMusicData = musicData;
-    }
-
-    public String getSourceDviceName() {
-        return sourceDviceName;
-    }
-
-    public void setSourceDviceName(String sourceDviceName) {
-        this.sourceDviceName = sourceDviceName;
-    }
-
-    public String getDestinationDviceName() {
-        return destinationDviceName;
-    }
-
-    public void setDestinationDviceName(String destinationDviceName) {
-        this.destinationDviceName = destinationDviceName;
     }
 
     public MessageType getTransactionType() {

@@ -10,6 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/PullToRefresh" />
+            <option value="$PROJECT_DIR$/Salut-0.5.0" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>
