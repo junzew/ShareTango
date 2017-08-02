@@ -4,6 +4,7 @@ import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 import com.bluelinelabs.logansquare.typeconverters.IntBasedTypeConverter;
 import com.imran.wali.sharetango.audiomanager.MusicData;
+import com.peak.salut.SalutDevice;
 
 import java.util.List;
 
@@ -15,11 +16,36 @@ import java.util.List;
 public class Packet {
     @JsonField public MusicData mMusicData;
     @JsonField public String base64string;
-    @JsonField public String sourceDviceName;
-    @JsonField public String destinationDviceName;
+    @JsonField public String sourceDviceName; // TODO get rid of these two fields
+    @JsonField public String destinationDviceName; // TODO get rid of these two fields
     @JsonField public List<MusicData> songList;
     @JsonField(typeConverter = MessageTypeConverter.class) public MessageType transactionType;
+    @JsonField public SalutDevice srcDevice;
+    @JsonField public SalutDevice dstDevice;
 
+    public MusicData getmMusicData() {
+        return mMusicData;
+    }
+
+    public void setmMusicData(MusicData mMusicData) {
+        this.mMusicData = mMusicData;
+    }
+
+    public SalutDevice getSrcDevice() {
+        return srcDevice;
+    }
+
+    public void setSrcDevice(SalutDevice srcDevice) {
+        this.srcDevice = srcDevice;
+    }
+
+    public SalutDevice getDstDevice() {
+        return dstDevice;
+    }
+
+    public void setDstDevice(SalutDevice dstDevice) {
+        this.dstDevice = dstDevice;
+    }
 
     public enum MessageType {
         SEND_SONG, SEND_SONG_LIST, REQUEST_SONG

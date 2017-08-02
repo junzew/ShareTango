@@ -18,8 +18,8 @@ public class Base64Utils {
         String encoded = Base64.encodeToString(bytes,Base64.DEFAULT);
         return encoded;
     }
-    public static void decode(String encodedBase64, String path) throws IOException {
+    public static void decode(String encodedBase64, String path, String fileName) throws IOException {
         byte[] bytes = Base64.decode(encodedBase64, Base64.DEFAULT);
-        FileUtils.writeByteArrayToFile(new File(path), bytes);
+        FileUtils.writeByteArrayToFile(new File(path, fileName), bytes);
     }
 }

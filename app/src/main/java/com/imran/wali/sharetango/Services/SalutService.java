@@ -2,11 +2,14 @@ package com.imran.wali.sharetango.Services;
 
 import android.app.Activity;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
@@ -36,6 +39,8 @@ import java.util.Map;
  */
 
 public class SalutService extends Service implements SalutDataCallback {
+
+    public static final int PORT_NUMBER = 4321;
 
     private static final String TAG = "SalutService";
 
@@ -69,7 +74,7 @@ public class SalutService extends Service implements SalutDataCallback {
         /* Salut Init */
         salutDataReceiver = new SalutDataReceiver(mActivity, this);
 
-        serviceData = new SalutServiceData("TestService", 9000, "HostDevice");
+        serviceData = new SalutServiceData("TestService", PORT_NUMBER, "HostDevice");
 
         network = new Salut(salutDataReceiver, serviceData, new SalutCallback() {
             @Override
@@ -110,6 +115,7 @@ public class SalutService extends Service implements SalutDataCallback {
                 }
             }
         } catch (IOException ex) {
+            ex.printStackTrace();
             Log.e(TAG, "Failed to parse network data.");
         }
     }
@@ -119,11 +125,17 @@ public class SalutService extends Service implements SalutDataCallback {
      */
     private void onSongReceived(Packet pkt) {
         Log.d(TAG, "onSongReceived");
+        MusicData song = pkt.getmMusicData();
+        Log.d(TAG, song.toString());
+        Toast.makeText(getApplicationContext(), "Received "+song, Toast.LENGTH_SHORT).show();
         String base64 = pkt.getBase64string();
         try {
             // TODO: should be stored in a specific folder and deleted later
             // String secondary_storage = System.getenv("SECONDARY_STORAGE");
-            Base64Utils.decode(base64, Environment.getExternalStorageState());
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/ShareTango";
+            Log.d(TAG, path);
+            Base64Utils.decode(base64, path, song.getTitle()+".mp3");
+            Toast.makeText(getApplicationContext(), song+" saved", Toast.LENGTH_SHORT).show();
             MusicDataRepository.getInstance().refreshList();
         } catch (IOException e) {
             e.printStackTrace();
@@ -135,26 +147,57 @@ public class SalutService extends Service implements SalutDataCallback {
      */
     private void onReceiveRequestForSong(Packet pkt) throws IOException {
         Log.d(TAG, "onReceiveRequestForSong");
-        // this is the song owner
+        if (network.isRunningAsHost) {
+            // forward request
+            request(pkt.getMusicData(), pkt.getSourceDviceName());
+            return;
+        }
+        // otherwise this is the song owner who received the request for a song
         MusicData songToRequest = pkt.getMusicData();
         // TODO find songToRequest locally and encode to Base 64
         // use Cursor/ContentResolver to get the song
-
+        Log.d(TAG, songToRequest.toString());
+        Log.d(TAG, pkt.getDestinationDviceName());
         Uri uri = Uri.parse("content://media/external/audio/media/" + songToRequest.getId());
-        File file = new File(uri.getPath());
+        File file = new File(getRealPathFromURI(mActivity, uri));
         String encoded = Base64Utils.toBase64(file);
         String client = pkt.getSourceDviceName();
-        SalutDevice clientDevice = findDestinationDevice(client);
+        //SalutDevice clientDevice = findDestinationDevice(client);
+        SalutDevice clientDevice = pkt.getSrcDevice();
+
+        Log.d(TAG, "client device " + clientDevice);
         Packet response = new Packet();
+        response.setMusicData(songToRequest);
         response.setTransactionType(Packet.MessageType.SEND_SONG);
         response.setBase64string(encoded);
-        network.sendToDevice(clientDevice, response, new SalutCallback() {
-                    @Override
-                    public void call() {
-                        Log.d(TAG, "send song to device failed");
-                    }
+        response.setSrcDevice(network.thisDevice);
+        response.setDestinationDviceName(clientDevice.deviceName);
+        response.setSourceDviceName(network.thisDevice.deviceName);
+//        Log.e(TAG, "encoded="+encoded);
+        Log.e(TAG, "after set base 64 string, sending to Device");
+        Log.e(TAG, "serviceName= "+clientDevice.serviceName);
+        // TODO get rid of deviceName
+        if (clientDevice.deviceName.equals(network.registeredHost.deviceName)) {
+            response.setDstDevice(network.registeredHost);
+            // host does not have serviceAddress (is null)
+            network.sendToHost(response, new SalutCallback() {
+                @Override
+                public void call() {
+                    Log.d(TAG, "send song to host failed");
+                    Toast.makeText(getApplicationContext(), "Send song failed", Toast.LENGTH_SHORT).show();
                 }
-        );
+            });
+        } else {
+            response.setDstDevice(clientDevice);
+            network.sendToDevice(clientDevice, response, new SalutCallback() {
+                        @Override
+                        public void call() {
+                            Log.d(TAG, "send song to device failed");
+                            Toast.makeText(getApplicationContext(), "Send song failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+            );
+        }
     }
 
     /**
@@ -197,7 +240,8 @@ public class SalutService extends Service implements SalutDataCallback {
             network.startNetworkService(new SalutDeviceCallback() {
                 @Override
                 public void call(SalutDevice salutDevice) {
-                    Log.d(TAG, "Host = someone connected");
+                    Log.d(TAG, "Host: "+salutDevice.deviceName+" is connected");
+                    Log.e(TAG, network.thisDevice.toString());
                     Toast.makeText(getApplicationContext(), "Device: " + salutDevice.instanceName + " connected.", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -208,18 +252,21 @@ public class SalutService extends Service implements SalutDataCallback {
 
     public void isHostServiceAvailable() {
         Log.d(TAG, "Is Host Service Available?");
+        Toast.makeText(getApplicationContext(), "Discovering networks...", Toast.LENGTH_SHORT).show();
         if (!network.isRunningAsHost && !network.isDiscovering) {
             SalutCallback ifHostIsFound = new SalutCallback() {
                 @Override
                 public void call() {
                     Log.d(TAG, "Make Connection with host cos you found HOST.");
                     // DEVICE MAINTAINABLE AREA
-
+                    Toast.makeText(getApplicationContext(),
+                            "Found host " + network.foundDevices.get(0).deviceName,
+                            Toast.LENGTH_SHORT).show();
                     SalutCallback onRegisterSuccess = new SalutCallback() {
                         @Override
                         public void call() {
                             Log.d(TAG, "REGISTER SUCCESSS... SENDING song list to host");
-
+                            Toast.makeText(getApplicationContext(), "Registration success", Toast.LENGTH_SHORT).show();
                             // TODO send message
 //                            Message message = new Message();
 //                            message.lol = "Wali";
@@ -232,6 +279,8 @@ public class SalutService extends Service implements SalutDataCallback {
                                 data.title += "- By ShareTango";
                             }
                             pkt.setSongList(localSongList);
+                            pkt.setDstDevice(network.registeredHost);
+                            pkt.setSrcDevice(network.thisDevice);
                             pkt.setDestinationDviceName(network.registeredHost.deviceName);
                             pkt.setSourceDviceName(network.thisDevice.deviceName);
                             pkt.setTransactionType(Packet.MessageType.SEND_SONG_LIST); // offering song list
@@ -247,6 +296,7 @@ public class SalutService extends Service implements SalutDataCallback {
                     SalutCallback onRegisterFaliure = new SalutCallback() {
                         @Override
                         public void call() {
+                            Toast.makeText(getApplicationContext(), "Registration failed", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "WE FUCKED UP");
                         }
                     };
@@ -257,11 +307,12 @@ public class SalutService extends Service implements SalutDataCallback {
                 @Override
                 public void call() {
                     Log.d(TAG, "Host not found, starting service");
+                    Toast.makeText(getApplicationContext(), "No host found, setting up network...", Toast.LENGTH_SHORT).show();
                     setupNetwork();
                 }
             };
 
-            network.discoverWithTimeout(ifHostIsFound, ifHostIsNotFound, 10000);
+            network.discoverWithTimeout(ifHostIsFound, ifHostIsNotFound, 7000);
         } else {
             network.stopServiceDiscovery(true);
         }
@@ -272,18 +323,29 @@ public class SalutService extends Service implements SalutDataCallback {
         void updateClient();
     }
 
+    public void request(MusicData song) {
+        request(song, null);
+    }
     /**
      * Request a song
      */
-    public void request(MusicData song) {
+    public void request(MusicData song, String fromDeviceName) {
         Log.d(TAG, "request a song");
         if (network.isRunningAsHost) {
             SalutDevice songOwner = findDestinationDevice(map.get(song));
+            Log.d(TAG, "songOwner of "+song.toString() +" is " + songOwner.toString());
             Packet packet = new Packet();
             packet.setTransactionType(Packet.MessageType.REQUEST_SONG); // indicate request for actual song
             packet.setMusicData(song);// the song to request
-            packet.setSourceDviceName(network.thisDevice.deviceName);
+            if (fromDeviceName == null) {
+                packet.setSourceDviceName(network.thisDevice.deviceName);
+                packet.setSrcDevice(network.thisDevice);
+            } else {
+                packet.setSourceDviceName(fromDeviceName);
+                packet.setSrcDevice(findDestinationDevice(fromDeviceName));
+            }
             packet.setDestinationDviceName(map.get(song));
+            packet.setDstDevice(songOwner);
             Log.d("SalutService", "requesting" + song.toString());
 
             network.sendToDevice(songOwner, packet, new SalutCallback() {
@@ -295,6 +357,8 @@ public class SalutService extends Service implements SalutDataCallback {
         } else {
             // let host resolve the request
             Packet pkt = new Packet();
+            pkt.setDstDevice(network.registeredHost);
+            pkt.setSrcDevice(network.thisDevice);
             pkt.setDestinationDviceName(network.registeredHost.deviceName);
             pkt.setSourceDviceName(network.thisDevice.deviceName);
             pkt.setTransactionType(Packet.MessageType.REQUEST_SONG);
@@ -325,6 +389,25 @@ public class SalutService extends Service implements SalutDataCallback {
         }
         return destinationDevice;
     }
+
+
+    // get absolute file path
+    // https://stackoverflow.com/questions/3401579/get-filename-and-path-from-uri-from-mediastore
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
 
     @Override
     public void onDestroy() {
