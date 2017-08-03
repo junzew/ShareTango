@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Environment;
@@ -42,6 +43,7 @@ import java.util.Map;
 public class SalutService extends Service implements SalutDataCallback {
 
     public static final int PORT_NUMBER = 4321;
+    public static final int TIME_OUT = 7000; // 7 seconds
 
     private static final String TAG = "SalutService";
 
@@ -133,11 +135,22 @@ public class SalutService extends Service implements SalutDataCallback {
         try {
             // TODO: should be stored in a specific folder and deleted later
             // String secondary_storage = System.getenv("SECONDARY_STORAGE");
-            String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/ShareTango";
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/ShareTango/";
             Log.d(TAG, path);
-            Base64Utils.decode(base64, path, song.getTitle()+".mp3");
+            String songName = song.getTitle() + ".mp3";
+            Base64Utils.decode(base64, path, songName);
             Toast.makeText(getApplicationContext(), song+" saved", Toast.LENGTH_SHORT).show();
-            MusicDataRepository.getInstance().refreshList();
+
+            // Tell the media scanner about the new file so that it is immediately available to the user.
+            MediaScannerConnection.scanFile(this,
+                    new String[] { path+songName}, null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.i("ExternalStorage", "Scanned " + path + ":");
+                            Log.i("ExternalStorage", "-> uri=" + uri);
+                            MusicDataRepository.getInstance().refreshList();
+                        }
+                    });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -314,7 +327,7 @@ public class SalutService extends Service implements SalutDataCallback {
                         public void call() {
                             updateClient();
                             Log.d(TAG, "REGISTER SUCCESS... SENDING song list to host");
-                            Toast.makeText(getApplicationContext(), "Registration success", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
                             // TODO send message
                             /** send client's local song list to the host */
                             sendSongListToHost();
@@ -325,7 +338,7 @@ public class SalutService extends Service implements SalutDataCallback {
                         @Override
                         public void call() {
                             updateClient();
-                            Toast.makeText(getApplicationContext(), "Registration failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Disconnected", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "WE FUCKED UP");
                         }
                     };
@@ -342,7 +355,7 @@ public class SalutService extends Service implements SalutDataCallback {
                 }
             };
 
-            network.discoverWithTimeout(ifHostIsFound, ifHostIsNotFound, 7000);
+            network.discoverWithTimeout(ifHostIsFound, ifHostIsNotFound, TIME_OUT);
         } else {
             network.stopServiceDiscovery(true);
         }
