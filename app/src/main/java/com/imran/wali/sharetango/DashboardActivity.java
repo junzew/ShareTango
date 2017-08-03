@@ -506,6 +506,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             unbindService(mPlayServiceConnection);
         }
         PlaybackController.getInstance().clearListeners();
+        mSalutService.stopSelf();
         unbindService(mSalutServiceConnection);
         super.onDestroy();
     }

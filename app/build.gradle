@@ -4,7 +4,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "26.0.1"
 
     defaultConfig {
         applicationId "com.imran.wali.sharetango"
@@ -25,7 +25,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':PullToRefresh')
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
@@ -36,8 +36,9 @@ dependencies {
     testCompile 'junit:junit:4.12'
     apt 'com.bluelinelabs:logansquare-compiler:1.3.4'
     compile 'com.bluelinelabs:logansquare:1.3.4'
-    compile 'com.github.markrjr:Salut:v0.5.0'
+//    compile 'com.github.markrjr:Salut:v0.5.0'
     provided 'org.projectlombok:lombok:1.16.2'
+    compile project(':Salut-0.5.0')
 }
 configurations.all {
     resolutionStrategy {

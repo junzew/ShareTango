@@ -174,6 +174,7 @@ public class MusicDataRepository {
 
     public void addAvailableMusicData(MusicData data) {
         availableFragmentAdapter.add(data);
+        musicDataList.add(data);
     }
     private IndexableListAdapter availableFragmentAdapter;
     public void registerAvilableMusicDataFragment(IndexableListAdapter adapter) {

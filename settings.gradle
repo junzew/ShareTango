@@ -1,2 +1,2 @@
-include ':app', ':PullToRefresh'
+include ':app', ':PullToRefresh', ':Salut-0.5.0'
 

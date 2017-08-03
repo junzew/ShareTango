@@ -175,7 +175,9 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer,
     }
 
     public void add(MusicData data) {
-        this.dataHolder.add(data);
-        notifyDataSetChanged();
+        if (!this.dataHolder.contains(data)) {
+            this.dataHolder.add(data);
+            notifyDataSetChanged();
+        }
     }
 }
