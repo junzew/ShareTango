@@ -95,9 +95,9 @@ public class LocalSongsFragment extends PagerAdapterTabFragment {
     private PullToRefreshBase.OnRefreshListener refreshListener = new PullToRefreshBase.OnRefreshListener() {
         @Override
         public void onRefresh(PullToRefreshBase refreshView) {
-            Toast.makeText(mContext, "refreshing", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Refreshing...", Toast.LENGTH_SHORT).show();
+            MusicDataRepository.getInstance().refreshList();
             pullToRefreshListView.postDelayed(new Runnable() {
-
                 @Override
                 public void run() {
                     pullToRefreshListView.onRefreshComplete();

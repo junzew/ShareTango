@@ -404,7 +404,7 @@ public class SalutService extends Service implements SalutDataCallback {
     }
 
     public void request(MusicData song) {
-        Toast.makeText(getApplicationContext(), "Downloading...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Downloading...", Toast.LENGTH_LONG).show();
         request(song, null);
     }
     /**
@@ -451,6 +451,7 @@ public class SalutService extends Service implements SalutDataCallback {
                     @Override
                     public void call() {
                         Log.d(TAG, "sending request to device failed");
+                        Toast.makeText(getApplicationContext(), "Request song failed", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

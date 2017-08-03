@@ -5,10 +5,12 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 
+import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.IndexableListAdapter;
 import com.imran.wali.sharetango.Utility.Base64Utils;
 import com.imran.wali.sharetango.audiomanager.MusicData;
@@ -147,10 +149,14 @@ public class MusicDataRepository {
                 Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
                 Uri uri = ContentUris.withAppendedId(sArtworkUri, musicData.albumId);
                 musicData.albumArtURIString = uri.toString();
+                Bitmap bitmap;
                 try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
+                    bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
                     musicData.encodedBitmapString = Base64Utils.encodeBitmap(bitmap);
                 } catch(FileNotFoundException fnfe) {
+                    bitmap = BitmapFactory.decodeResource(mContext.getResources(),
+                            R.drawable.track_ablumart_placeholder);
+                    musicData.encodedBitmapString = Base64Utils.encodeBitmap(bitmap);
                     fnfe.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
