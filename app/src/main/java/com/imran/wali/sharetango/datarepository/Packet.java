@@ -35,16 +35,16 @@ public class Packet {
             int result;
             switch (object) {
                 case SEND_SONG:
-                    result = 1;
+                    result = 0;
                     break;
                 case SEND_SONG_LIST:
-                    result = 2;
+                    result = 1;
                     break;
                 case REQUEST_SONG:
-                    result = -1;
+                    result = 2;
                     break;
                 default:
-                    result = 0;
+                    result = -1;
                     break;
             }
             return result;
