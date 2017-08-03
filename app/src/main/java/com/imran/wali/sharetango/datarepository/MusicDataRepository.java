@@ -1,15 +1,19 @@
 package com.imran.wali.sharetango.datarepository;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.IndexableListAdapter;
+import com.imran.wali.sharetango.Utility.Base64Utils;
 import com.imran.wali.sharetango.audiomanager.MusicData;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -135,10 +139,23 @@ public class MusicDataRepository {
                 musicData.artist = cursor.getString(cursor.getColumnIndex("artist"));
                 musicData.path = cursor.getString(cursor.getColumnIndex("_data"));
                 int songId = cursor.getInt(cursor.getColumnIndex("_id"));
-                musicData.albumArtURIString = "content://media/external/audio/media/" + songId + "/albumart";
+//                musicData.albumArtURIString = "content://media/external/audio/media/" + songId + "/albumart";
                 musicData.duration = cursor.getString(cursor.getColumnIndex("duration"));;
                 musicData.id = songId;
                 musicData.albumId = cursor.getLong(cursor.getColumnIndex("album_id"));
+
+                Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
+                Uri uri = ContentUris.withAppendedId(sArtworkUri, musicData.albumId);
+                musicData.albumArtURIString = uri.toString();
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
+                    musicData.encodedBitmapString = Base64Utils.encodeBitmap(bitmap);
+                } catch(FileNotFoundException fnfe) {
+                    fnfe.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 data.add(musicData);
                 if (i % progressInterval == 0) {
                     publishProgress(currentProgress++);

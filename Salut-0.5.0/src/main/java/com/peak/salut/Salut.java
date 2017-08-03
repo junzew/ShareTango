@@ -787,6 +787,11 @@ public class Salut implements WifiP2pManager.ConnectionInfoListener {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void stopNetworkService(final boolean disableWiFi) {
+        stopNetworkService(disableWiFi, null, null);
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public void stopNetworkService(final boolean disableWiFi, final SalutCallback onStopSuccess, final SalutCallback onStopFailure) {
         if (isRunningAsHost) {
             Log.v(TAG, "Stopping network service...");
             stopServiceDiscovery(true);
@@ -799,6 +804,7 @@ public class Salut implements WifiP2pManager.ConnectionInfoListener {
                     @Override
                     public void onFailure(int reason) {
                         Log.d(TAG, "Could not end the service. Reason : " + reason);
+                        onStopFailure.call();
                     }
 
                     @Override
@@ -808,6 +814,8 @@ public class Salut implements WifiP2pManager.ConnectionInfoListener {
                             disableWiFi(dataReceiver.context); //Called here to give time for request to be disposed.
                         }
                         isRunningAsHost = false;
+                        isConnectedToAnotherDevice = false; // BUG
+                        onStopSuccess.call();
                     }
                 });
 

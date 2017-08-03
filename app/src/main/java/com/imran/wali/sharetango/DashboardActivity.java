@@ -100,6 +100,13 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private ImageButton mPlayButton;
     private ImageButton mNextButton;
 
+    /* Drawer Header */
+    private ImageView mNetworkStatusImage;
+    private TextView mNetworkStatusText;
+    /* Menu Item*/
+    private MenuItem mDiscoverMenuItem;
+    private MenuItem mDisableMenuItem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,6 +154,14 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         mSlidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         mSlidingUpPanelLayout.addPanelSlideListener(this);
         mFloatingPlayer = (LinearLayout) findViewById(R.id.floating_player);
+
+        /*Init Drawer Header and MenuItems*/
+        View headerLayout = navigationView.getHeaderView(0);
+        mNetworkStatusImage = (ImageView) headerLayout.findViewById(R.id.imageView);
+        mNetworkStatusText = (TextView) headerLayout.findViewById(R.id.textView);
+        Menu menu = navigationView.getMenu();
+        mDiscoverMenuItem = menu.findItem(R.id.nav_discover);
+        mDisableMenuItem = menu.findItem(R.id.nav_disable);
 
         mAlbumArtImage = (ImageView) findViewById(R.id.floating_player_album_art);
         mSongTitle = (TextView) findViewById(R.id.floating_player_song_name);
@@ -278,11 +293,30 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
 
 //    private SongFragment mSongFragment = (SongFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.SONG);
-
+    private String mNetworkStatus = "No connection";
     @Override
-    public void updateClient() {
+    public void update(String networkStatus) {
         // receive data from SalutService
         // TODO
+        mNetworkStatus = networkStatus;
+        mNetworkStatusText.setText(networkStatus);
+        if (networkStatus.equals("No connection")) {
+            mNetworkStatusImage.setImageResource(R.drawable.ic_signal_wifi_off_black_24dp);
+            mDiscoverMenuItem.setEnabled(true);
+            mDisableMenuItem.setEnabled(false);
+        } else if (networkStatus.equals("Host")) {
+            mNetworkStatusImage.setImageResource(R.drawable.ic_router_black_24dp);
+            mDiscoverMenuItem.setEnabled(false);
+            mDisableMenuItem.setEnabled(true);
+        } else if (networkStatus.equals("Client")) {
+            mNetworkStatusImage.setImageResource(R.drawable.ic_speaker_phone_black_24dp);
+            mDiscoverMenuItem.setEnabled(false);
+            mDisableMenuItem.setEnabled(true);
+        } else { // discovering
+            mNetworkStatusImage.setImageResource(R.drawable.ic_leak_add_black_24dp);
+            mDiscoverMenuItem.setEnabled(false);
+            mDisableMenuItem.setEnabled(false);
+        }
     }
     @Override
     public void onPanelSlide(View panel, float slideOffset) {
@@ -458,20 +492,15 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        if (!item.isEnabled()) return false;
         int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        switch (id) {
+            case R.id.nav_discover:
+                mSalutService.isHostServiceAvailable();
+                break;
+            case R.id.nav_disable:
+                mSalutService.stopNetwork();
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

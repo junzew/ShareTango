@@ -12,9 +12,11 @@ import android.widget.TextView;
 
 import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
+import com.imran.wali.sharetango.Utility.Base64Utils;
 import com.imran.wali.sharetango.audiomanager.MusicData;
 import com.imran.wali.sharetango.audiomanager.PlaybackController;
 import com.imran.wali.sharetango.datarepository.MusicDataRepository;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -65,7 +67,7 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer,
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        final ViewHolder holder;
         if (convertView == null) {
             //This is the first time we are seeing this
             convertView = inflater.inflate(R.layout.listview_item, parent, false);
@@ -78,12 +80,29 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer,
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        MusicData itemMusicData = getItem(position);
+        final MusicData itemMusicData = getItem(position);
         if (itemMusicData != null) {
             holder.tracktitle.setText(itemMusicData.getTitle());
             holder.artist.setText(itemMusicData.getArtist());
             //holder.duration.setText(itemMusicData);
-            Picasso.with(mContext).load(itemMusicData.getAlbumArtURI()).placeholder(R.drawable.track_ablumart_placeholder).into(holder.albumart);
+
+                Picasso.with(mContext)
+                        .load(itemMusicData.getAlbumArtURI())
+//                        .placeholder(R.drawable.track_ablumart_placeholder)
+                        .into(holder.albumart, new Callback() {
+                    @Override
+                    public void onSuccess() {}
+
+                    @Override
+                    public void onError() {
+                        // albumArt is sent from another device
+                        if (itemMusicData.encodedBitmapString != null) {
+                            Base64Utils.decodeBitmapIntoImageView(itemMusicData.encodedBitmapString, holder.albumart);
+                        } else {
+                            holder.albumart.setImageResource(R.drawable.track_ablumart_placeholder);
+                        }
+                    }
+                });
         }
         return convertView;
     }

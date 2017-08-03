@@ -22,6 +22,7 @@ public class MusicData implements Parcelable{
     @JsonField public String duration;
     @JsonField public long id;
     @JsonField public long albumId;
+    @JsonField public String encodedBitmapString;
 
     public MusicData() {};
 
@@ -34,6 +35,7 @@ public class MusicData implements Parcelable{
         dest.writeString(duration);
         dest.writeLong(id);
         dest.writeLong(albumId);
+        dest.writeString(encodedBitmapString);
     }
 
     public MusicData(Parcel in){
@@ -44,6 +46,7 @@ public class MusicData implements Parcelable{
         duration = in.readString();
         id = in.readLong();
         albumId = in.readLong();
+        encodedBitmapString = in.readString();
     }
 
     public String getArtist() {

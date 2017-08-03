@@ -15,6 +15,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.imran.wali.sharetango.DashboardActivity;
 import com.imran.wali.sharetango.Utility.Base64Utils;
 import com.imran.wali.sharetango.audiomanager.MusicData;
 import com.imran.wali.sharetango.datarepository.MusicDataRepository;
@@ -22,7 +23,6 @@ import com.imran.wali.sharetango.datarepository.Packet;
 import com.peak.salut.Callbacks.SalutCallback;
 import com.peak.salut.Callbacks.SalutDataCallback;
 import com.peak.salut.Callbacks.SalutDeviceCallback;
-//import com.peak.salut.Salut;
 import com.peak.salut.Salut;
 import com.peak.salut.SalutDataReceiver;
 import com.peak.salut.SalutDevice;
@@ -85,7 +85,7 @@ public class SalutService extends Service implements SalutDataCallback {
             }
         });
          /* Discover hosts*/
-        isHostServiceAvailable();
+//        isHostServiceAvailable();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -280,17 +280,20 @@ public class SalutService extends Service implements SalutDataCallback {
             }, new SalutCallback() /* on success */ {
                 @Override
                 public void call() {
+                    updateClient();
                     Toast.makeText(getApplicationContext(), "Network created", Toast.LENGTH_SHORT).show();
                 }
             }, new SalutCallback() /* on failure*/ {
                 @Override
                 public void call() {
+                    updateClient();
                     Toast.makeText(getApplicationContext(), "Failed to create network", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
             network.stopNetworkService(false);
         }
+        updateClient();
     }
 
     public void isHostServiceAvailable() {
@@ -300,6 +303,7 @@ public class SalutService extends Service implements SalutDataCallback {
             SalutCallback ifHostIsFound = new SalutCallback() {
                 @Override
                 public void call() {
+                    updateClient();
                     Log.d(TAG, "Found Host, Make Connection with Host.");
                     // DEVICE MAINTAINABLE AREA
                     Toast.makeText(getApplicationContext(),
@@ -308,6 +312,7 @@ public class SalutService extends Service implements SalutDataCallback {
                     SalutCallback onRegisterSuccess = new SalutCallback() {
                         @Override
                         public void call() {
+                            updateClient();
                             Log.d(TAG, "REGISTER SUCCESS... SENDING song list to host");
                             Toast.makeText(getApplicationContext(), "Registration success", Toast.LENGTH_SHORT).show();
                             // TODO send message
@@ -319,6 +324,7 @@ public class SalutService extends Service implements SalutDataCallback {
                     SalutCallback onRegisterFaliure = new SalutCallback() {
                         @Override
                         public void call() {
+                            updateClient();
                             Toast.makeText(getApplicationContext(), "Registration failed", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "WE FUCKED UP");
                         }
@@ -329,6 +335,7 @@ public class SalutService extends Service implements SalutDataCallback {
             SalutCallback ifHostIsNotFound = new SalutCallback() {
                 @Override
                 public void call() {
+                    updateClient();
                     Log.d(TAG, "Host not found, starting service");
                     Toast.makeText(getApplicationContext(), "No host found, setting up network...", Toast.LENGTH_SHORT).show();
                     setupNetwork();
@@ -339,6 +346,7 @@ public class SalutService extends Service implements SalutDataCallback {
         } else {
             network.stopServiceDiscovery(true);
         }
+        updateClient();
     }
 
     private void sendSongListToHost() {
@@ -379,7 +387,7 @@ public class SalutService extends Service implements SalutDataCallback {
 
     // Communicate to activity through this interface
     public interface ISalutCallback {
-        void updateClient();
+        void update(String networkStatus);
     }
 
     public void request(MusicData song) {
@@ -486,15 +494,49 @@ public class SalutService extends Service implements SalutDataCallback {
         }
     }
 
+    public void stopNetwork() {
+        if (network.isRunningAsHost) {
+            Toast.makeText(getApplicationContext(), "Stopping host...", Toast.LENGTH_SHORT).show();
+            network.stopNetworkService(false, new SalutCallback() {
+                @Override
+                public void call() {
+                   updateClient();
+                }
+            }, null);
+        } else { // Client or Not connected
+            if (network.isConnectedToAnotherDevice) {
+                Toast.makeText(getApplicationContext(), "Leaving network...", Toast.LENGTH_SHORT).show();
+                network.unregisterClient(new SalutCallback() {
+                    @Override
+                    public void call() {
+                        updateClient();
+                    }
+                }, null, false);
+            }
+        }
+    }
+
+    public String networkStatus() {
+        if (network.isDiscovering) {
+            return "Discovering...";
+        }
+        if (network.isRunningAsHost) {
+            return "Host";
+        } else if (network.isConnectedToAnotherDevice){
+            return "Client";
+        }
+        return "No connection";
+    }
+
+    private void updateClient() {
+        ((DashboardActivity)mActivity).update(networkStatus());
+    }
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "SalutService onDestroy");
-        if (network.isRunningAsHost)
-            network.stopNetworkService(false);
-        else
-            network.unregisterClient(false);
-
+        stopNetwork();
     }
 }
