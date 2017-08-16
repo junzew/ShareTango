@@ -41,6 +41,15 @@ public class PlaybackController {
     private LinkedList<MusicData> playbackQueue = new LinkedList<>();
     private int index = 0;
 
+    // start playing first song in queue
+    public void start(boolean isFromUser) {
+        if (!playbackQueue.isEmpty()) {
+            MusicData song = playbackQueue.get(0);
+            start(song, isFromUser);
+        }
+    }
+
+    // start playing a specific song
     public void start(MusicData song, boolean isFromUser) {
         index = playbackQueue.indexOf(song);
         for (IMusicStartListener listener: listeners) {

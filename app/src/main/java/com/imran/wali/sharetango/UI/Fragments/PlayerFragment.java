@@ -35,7 +35,7 @@ import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link PlayerFragment.OnFragmentInteractionListener} interface
+ * {@link OnPlayerStatusChangeListener} interface
  * to handle interaction events.
  * Use the {@link PlayerFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -43,7 +43,7 @@ import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
 public class PlayerFragment extends Fragment {
 
 
-    private OnFragmentInteractionListener mListener;
+    private OnPlayerStatusChangeListener mListener;
 
     LinearLayout mRootLayout;
 
@@ -110,6 +110,14 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mListener = (OnPlayerStatusChangeListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
     }
 
     @Override
@@ -128,9 +136,11 @@ public class PlayerFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnPlayerStatusChangeListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        // notify DashboardActivity player status changed to playing/paused
+
+        void onPlayerStatusChange(boolean isPlaying);
     }
 
 
@@ -198,10 +208,12 @@ public class PlayerFragment extends Fragment {
                     mService.pause();
                     Log.i("PlayService", "pause");
                     mPlayImage.setImageResource(R.drawable.ic_play);
+                    mListener.onPlayerStatusChange(false);
                 } else {
                     mService.resume();
                     mPlayImage.setImageResource(R.drawable.ic_pause);
                     Log.i("PlayService", "resume");
+                    mListener.onPlayerStatusChange(true);
                 }
             }
         });
@@ -209,6 +221,7 @@ public class PlayerFragment extends Fragment {
         PlaybackController.getInstance().addListener(new PlaybackController.IMusicStartListener() {
             @Override
             public void startMusic(MusicData music, boolean isFromUser) {
+                mPlayImage.setImageResource(R.drawable.ic_pause);
                 long albumId = music.albumId;
                 Uri uri = ContentUris.withAppendedId(ARTWORK_URI, albumId);
                 Picasso.with(getActivity())
@@ -353,6 +366,15 @@ public class PlayerFragment extends Fragment {
         mAlbumTitle.setText(data.title);
         mSeekBar.setProgress(0);
         mPlayImage.setImageResource(R.drawable.ic_pause);
+    }
+
+    // change icon of play/pause
+    public void updatePlayerStatus(boolean isPlaying) {
+        if (isPlaying) {
+            mPlayImage.setImageResource(R.drawable.ic_pause);
+        } else {
+            mPlayImage.setImageResource(R.drawable.ic_play);
+        }
     }
 
     @Override

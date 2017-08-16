@@ -45,7 +45,8 @@
             android:id="@+id/floating_player"
             android:layout_width="match_parent"
             android:layout_height="@dimen/floating_player_height"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@color/colorPrimary">
 
             <ImageView
                 android:id="@+id/floating_player_album_art"

@@ -39,7 +39,6 @@ import android.widget.TextView;
 import com.imran.wali.sharetango.Services.PlayService;
 import com.imran.wali.sharetango.Services.SalutService;
 import com.imran.wali.sharetango.UI.Fragments.AvailableSongsFragment;
-import com.imran.wali.sharetango.UI.Fragments.DownloadedSongsFragment;
 import com.imran.wali.sharetango.UI.Fragments.LocalSongsFragment;
 import com.imran.wali.sharetango.UI.Fragments.PagerAdapterTabFragment;
 import com.imran.wali.sharetango.UI.Fragments.PlayerFragment;
@@ -59,7 +58,7 @@ import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
 import static com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.COLLAPSED;
 import static com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.EXPANDED;
 
-public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SalutService.ISalutCallback, SlidingUpPanelLayout.PanelSlideListener {
+public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SalutService.ISalutCallback, SlidingUpPanelLayout.PanelSlideListener, PlayerFragment.OnPlayerStatusChangeListener {
 
     Context mContext;
     private SalutService mSalutService;
@@ -172,9 +171,11 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 if(mService.isPlaying()) {
                     mService.pause();
                     mPlayButton.setImageResource(R.drawable.ic_play);
+                    mPlayerFragment.updatePlayerStatus(false);
                 } else {
                     mService.resume();
                     mPlayButton.setImageResource(R.drawable.ic_pause);
+                    mPlayerFragment.updatePlayerStatus(true);
                 }
             }
         });
@@ -346,14 +347,25 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         }
     }
 
+    @Override
+    public void onPlayerStatusChange(boolean isPlaying) {
+        if (isPlaying) {
+            mPlayButton.setImageResource(R.drawable.ic_pause);
+        } else {
+            mPlayButton.setImageResource(R.drawable.ic_play);
+        }
+    }
+
 //    @Override
 //    public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
 //        System.out.print(wifiP2pInfo.toString());
 //    }
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
-        final int PAGE_COUNT = 3;
-        private String tabTitles[] = new String[]{"Available", "Downloaded", "Local"}; // Fix this
+//        final int PAGE_COUNT = 3;
+//        private String tabTitles[] = new String[]{"Available", "Downloaded", "Local"}; // Fix this
+        final int PAGE_COUNT = 2;
+        private String tabTitles[] = new String[]{"Local", "Available"}; // Fix this
         private ArrayList<Fragment> fragmentList;
 
         ScreenSlidePagerAdapter(FragmentManager fm) {
@@ -363,10 +375,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             args.putSerializable("type", PagerAdapterTabFragment.PageType.Available);
             PagerAdapterTabFragment mAvailableSongFragment = new AvailableSongsFragment();
             mAvailableSongFragment.setArguments(args);
-            args = new Bundle();
-            args.putSerializable("type", PagerAdapterTabFragment.PageType.Downloaded);
-            PagerAdapterTabFragment mDownloadedSongFragment = new DownloadedSongsFragment();
-            mDownloadedSongFragment.setArguments(args);
+//            args = new Bundle();
+//            args.putSerializable("type", PagerAdapterTabFragment.PageType.Downloaded);
+//            PagerAdapterTabFragment mDownloadedSongFragment = new DownloadedSongsFragment();
+//            mDownloadedSongFragment.setArguments(args);
             args = new Bundle();
             args.putSerializable("type", PagerAdapterTabFragment.PageType.Local);
             PagerAdapterTabFragment mLocalSongFragment = new LocalSongsFragment();
@@ -374,9 +386,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             fragmentList = new ArrayList<>();
 
             /* Adding All Fragments Here To Adapter*/
-            fragmentList.add(mAvailableSongFragment);
-            fragmentList.add(mDownloadedSongFragment);
+
+//            fragmentList.add(mDownloadedSongFragment);
             fragmentList.add(mLocalSongFragment);
+            fragmentList.add(mAvailableSongFragment);
         }
 
         @Override

@@ -4,7 +4,7 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="@color/colorPrimary"
     android:clickable="true"
     android:focusable="false"
     android:orientation="vertical"
@@ -22,7 +22,8 @@
             android:id="@+id/album"
             android:layout_width="match_parent"
             android:layout_height="336dp"
-            android:scaleType="fitXY"/>
+            android:scaleType="fitXY"
+            android:src="@drawable/default_album_art"/>
 
         <TextView
             android:id="@+id/song_title"
@@ -82,7 +83,7 @@
                 android:id="@+id/play_button"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
-                android:src="@drawable/ic_pause" />
+                android:src="@drawable/ic_play" />
 
             <ImageView
                 android:id="@+id/next"

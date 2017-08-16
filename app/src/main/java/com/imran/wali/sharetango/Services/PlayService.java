@@ -159,7 +159,11 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         mMediaPlayer.pause();
     }
     public void resume() {
-        mMediaPlayer.start();
+        if (isPaused()) {
+            mMediaPlayer.start();
+        } else if (!isPlaying()) {
+            PlaybackController.getInstance().start(true);
+        }
     }
     public void stop() {
         mMediaPlayer.stop();
@@ -179,6 +183,10 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     }
     public void seekTo(int progress) {
         mMediaPlayer.seekTo(progress);
+    }
+
+    private boolean isPaused() {
+        return !mMediaPlayer.isPlaying() && mMediaPlayer.getCurrentPosition() > 1;
     }
 
     @Override
