@@ -51,7 +51,7 @@
                 android:id="@+id/floating_player_album_art"
                 android:layout_width="@dimen/floating_player_height"
                 android:layout_height="@dimen/floating_player_height"
-                android:src="@drawable/track_ablumart_placeholder" />
+                android:src="@drawable/default_album_art" />
 
             <TextView
                 android:id="@+id/floating_player_song_name"
@@ -70,14 +70,14 @@
                 android:textColor="@color/song_name"
                 android:textSize="14sp" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/floating_player_play_button"
                 android:layout_width="@dimen/floating_player_height"
                 android:layout_height="@dimen/floating_player_height"
                 android:scaleType="centerCrop"
-                android:src="@drawable/play" />
+                android:src="@drawable/ic_play" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/floating_player_next_button"
                 android:layout_width="@dimen/floating_player_height"
                 android:layout_height="@dimen/floating_player_height"

@@ -88,7 +88,7 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer,
 
                 Picasso.with(mContext)
                         .load(itemMusicData.getAlbumArtURI())
-//                        .placeholder(R.drawable.track_ablumart_placeholder)
+//                        .placeholder(R.drawable.default_album_art)
                         .into(holder.albumart, new Callback() {
                     @Override
                     public void onSuccess() {}
@@ -99,7 +99,7 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer,
                         if (itemMusicData.encodedBitmapString != null) {
                             Base64Utils.decodeBitmapIntoImageView(itemMusicData.encodedBitmapString, holder.albumart);
                         } else {
-                            holder.albumart.setImageResource(R.drawable.track_ablumart_placeholder);
+                            holder.albumart.setImageResource(R.drawable.default_album_art);
                         }
                     }
                 });

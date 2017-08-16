@@ -266,15 +266,15 @@ public class FastBlurUtil {
 //        Bitmap cropBitmap = Bitmap.createBitmap(bitmap, cropBitmapWidth, 0, cropBitmapWidth,
 //                bitmap.getHeight());
 
-        int blurRadius = 32;
-        int scaleFactor = 16;
+        int blurRadius = 8;
+        int scaleFactor = 50;
 
         Bitmap scaleBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / scaleFactor, bitmap
                 .getHeight() / scaleFactor, false);
 
         final Bitmap blurBitmap = FastBlurUtil.doBlur(scaleBitmap, blurRadius, true);
         final Drawable foregroundDrawable = new BitmapDrawable(blurBitmap);
-        foregroundDrawable.setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
+        foregroundDrawable.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
         return foregroundDrawable;
     }
 

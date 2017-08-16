@@ -36,7 +36,7 @@ public class AlbumActivity extends AppCompatActivity {
 //        Uri uri = ContentUris.withAppendedId(ARTWORK_URI, albumID);
 //        Picasso.with(this)
 //                .load(uri)
-//                .placeholder(R.drawable.track_ablumart_placeholder)
+//                .placeholder(R.drawable.default_album_art)
 //                .into(mAlbumCover);
 //    }
 //

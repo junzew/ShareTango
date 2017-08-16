@@ -12,7 +12,7 @@
         android:layout_height="60dp"
         android:layout_gravity="center"
         android:id="@+id/item_albumart"
-        tools:background="@drawable/track_ablumart_placeholder"/>
+        tools:background="@drawable/default_album_art"/>
 
     <LinearLayout
         android:layout_width="wrap_content"

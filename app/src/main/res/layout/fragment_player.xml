@@ -65,38 +65,38 @@
             <ImageView
 
                 android:id="@+id/favorite"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:src="@drawable/favorite"
-                android:layout_marginRight="40dp"
+                android:layout_marginRight="36dp"
                 />
 
             <ImageView
                 android:id="@+id/previous"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
                 android:layout_marginRight="10dp"
                 android:src="@drawable/skip_prev" />
 
             <ImageView
                 android:id="@+id/play_button"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@drawable/pause_button" />
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:src="@drawable/ic_pause" />
 
             <ImageView
                 android:id="@+id/next"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
                 android:layout_marginLeft="10dp"
                 android:src="@drawable/skip_next" />
 
             <ImageView
                 android:id="@+id/repeat"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:src="@drawable/repeat"
-                android:layout_marginLeft="42dp"
+                android:layout_marginLeft="36dp"
                 />
 
         </LinearLayout>
@@ -124,7 +124,6 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:max="100"
                 android:progress="100"/>
 

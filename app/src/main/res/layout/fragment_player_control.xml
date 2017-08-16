@@ -16,7 +16,7 @@
     <ImageButton
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:src="@drawable/play"
+        android:src="@drawable/ic_play"
         android:scaleType="fitCenter"/>
     <ImageButton
         android:layout_width="48dp"

@@ -134,7 +134,7 @@ public class AlbumFragment extends PagerAdapterTabFragment {
             Uri uri = ContentUris.withAppendedId(ARTWORK_URI, album.albumId);
             Picasso.with(getActivity())
                     .load(uri)
-                    .placeholder(R.drawable.track_ablumart_placeholder)
+                    .placeholder(R.drawable.default_album_art)
                     .into(albumArt);
             convertView.setOnClickListener(new View.OnClickListener() {
 

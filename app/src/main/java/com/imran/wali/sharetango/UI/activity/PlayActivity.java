@@ -90,7 +90,7 @@ public class PlayActivity extends AppCompatActivity {
 ////                Uri uri = ContentUris.withAppendedId(ARTWORK_URI, data.albumId);
 ////                Picasso.with(PlayActivity.this)
 ////                        .load(uri)
-////                        .placeholder(R.drawable.track_ablumart_placeholder)
+////                        .placeholder(R.drawable.default_album_art)
 ////                        .into(mAlbumArtImage);
 ////                mAlbumTitle.setText(data.title);
 ////                mSeekBar.setProgress(0);
@@ -104,7 +104,7 @@ public class PlayActivity extends AppCompatActivity {
 ////                Uri uri = ContentUris.withAppendedId(ARTWORK_URI, albumId);
 ////                Picasso.with(PlayActivity.this)
 ////                        .load(uri)
-////                        .placeholder(R.drawable.track_ablumart_placeholder)
+////                        .placeholder(R.drawable.default_album_art)
 ////                        .into(mAlbumArtImage);
 ////                String songTitle = music.getTitle();
 ////                mAlbumTitle.setText(songTitle);
@@ -186,11 +186,11 @@ public class PlayActivity extends AppCompatActivity {
 //                    mService.pause();
 //                    Log.i("PlayActivity", "pause");
 //                    isPlaying = false;
-//                    mPlayImage.setImageResource(R.drawable.play);
+//                    mPlayImage.setImageResource(R.drawable.ic_play);
 //                } else {
 //                    isPlaying = true;
 //                    mService.resume();
-//                    mPlayImage.setImageResource(R.drawable.pause_button);
+//                    mPlayImage.setImageResource(R.drawable.ic_pause);
 //                    Log.i("PlayActivity", "resume");
 //                }
 //            }

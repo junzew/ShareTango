@@ -32,7 +32,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -97,8 +96,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private LinearLayout mFloatingPlayer;
     private ImageView mAlbumArtImage;
     private TextView mSongTitle;
-    private ImageButton mPlayButton;
-    private ImageButton mNextButton;
+    private ImageView mPlayButton;
+    private ImageView mNextButton;
 
     /* Drawer Header */
     private ImageView mNetworkStatusImage;
@@ -165,17 +164,17 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
         mAlbumArtImage = (ImageView) findViewById(R.id.floating_player_album_art);
         mSongTitle = (TextView) findViewById(R.id.floating_player_song_name);
-        mPlayButton = (ImageButton) findViewById(R.id.floating_player_play_button);
-        mNextButton = (ImageButton) findViewById(R.id.floating_player_next_button);
+        mPlayButton = (ImageView) findViewById(R.id.floating_player_play_button);
+        mNextButton = (ImageView) findViewById(R.id.floating_player_next_button);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(mService.isPlaying()) {
                     mService.pause();
-                    mPlayButton.setImageResource(R.drawable.play);
+                    mPlayButton.setImageResource(R.drawable.ic_play);
                 } else {
                     mService.resume();
-                    mPlayButton.setImageResource(R.drawable.pause_button);
+                    mPlayButton.setImageResource(R.drawable.ic_pause);
                 }
             }
         });
@@ -202,11 +201,11 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 Uri uri = ContentUris.withAppendedId(ARTWORK_URI, music.albumId);
                 Picasso.with(DashboardActivity.this)
                         .load(uri)
-                        .placeholder(R.drawable.track_ablumart_placeholder)
+                        .placeholder(R.drawable.default_album_art)
                         .into(mAlbumArtImage);
                 mSongTitle.setText(music.getTitle());
                 mSongTitle.setSelected(true); // marquee text
-                mPlayButton.setImageResource(R.drawable.pause_button);
+                mPlayButton.setImageResource(R.drawable.ic_pause);
 
                 try {
                     Drawable backgroundDrawable = FastBlurUtil.getBlurredBackgroundDrawable(uri, DashboardActivity.this);

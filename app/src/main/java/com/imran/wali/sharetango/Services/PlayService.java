@@ -94,7 +94,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
             mMediaPlayer.reset();
             broadcast(nextSong);
             PlaybackController.getInstance().start(nextSong, isFromUser);
-//            play(nextSong.id);
+//            ic_play(nextSong.id);
         }
     }
 
@@ -107,7 +107,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
             mMediaPlayer.reset();
             broadcast(previousSong);
             PlaybackController.getInstance().start(previousSong, isFromUser);
-//            play(previousSong.id);
+//            ic_play(previousSong.id);
         }
     }
 
@@ -120,7 +120,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
             mMediaPlayer.reset();
             broadcast(nextSong);
             PlaybackController.getInstance().start(nextSong, isFromUser);
-//            play(nextSong.id);
+//            ic_play(nextSong.id);
         }
     }
 
@@ -129,7 +129,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         mp.start();
     }
 
-    // play a song with id
+    // ic_play a song with id
     public void play(long id) {
         Uri contentUri = ContentUris.withAppendedId(
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);

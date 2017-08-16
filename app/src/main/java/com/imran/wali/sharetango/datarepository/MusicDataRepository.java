@@ -155,7 +155,7 @@ public class MusicDataRepository {
                     musicData.encodedBitmapString = Base64Utils.encodeBitmap(bitmap);
                 } catch(FileNotFoundException fnfe) {
                     bitmap = BitmapFactory.decodeResource(mContext.getResources(),
-                            R.drawable.track_ablumart_placeholder);
+                            R.drawable.default_album_art);
                     musicData.encodedBitmapString = Base64Utils.encodeBitmap(bitmap);
                     fnfe.printStackTrace();
                 } catch (Exception e) {

@@ -97,7 +97,7 @@ public class PlayActivity extends AppCompatActivity {
 ////                Uri uri = ContentUris.withAppendedId(ARTWORK_URI, data.albumId);
 ////                Picasso.with(PlayActivity.this)
 ////                        .load(uri)
-////                        .placeholder(R.drawable.track_ablumart_placeholder)
+////                        .placeholder(R.drawable.default_album_art)
 ////                        .into(mAlbumArtImage);
 //                mAlbumTitle.setText(data.title);
 //                mSeekBar.setProgress(0);
@@ -134,7 +134,7 @@ public class PlayActivity extends AppCompatActivity {
 //        mRepeatButton = (ImageView) findViewById(R.id.repeat);
 //
 //        // TODO: shuffle and favorite
-//        // play mode
+//        // ic_play mode
 //        mRepeatButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -143,19 +143,19 @@ public class PlayActivity extends AppCompatActivity {
 //                    isNormal = false;
 //                    isShuffle = false;
 //                    mRepeatButton.setImageResource(R.drawable.repeat_one);
-//                    Log.i("PlayActivity", "repeat one play");
+//                    Log.i("PlayActivity", "repeat one ic_play");
 //                } else if (isRepeat) {
 //                    isRepeat = false;
 //                    isNormal = false;
 //                    isShuffle = true;
 //                    mRepeatButton.setImageResource(R.drawable.shuffle);
-//                    Log.i("PlayActivity", "shuffle play");
+//                    Log.i("PlayActivity", "shuffle ic_play");
 //                } else {
 //                    isRepeat = false;
 //                    isNormal = true;
 //                    isShuffle = false;
 //                    mRepeatButton.setImageResource(R.drawable.repeat);
-//                    Log.i("PlayActivity", "normal play");
+//                    Log.i("PlayActivity", "normal ic_play");
 //                }
 //            }
 //        });
@@ -215,7 +215,7 @@ public class PlayActivity extends AppCompatActivity {
 //                    mService.restart();
 //                    mSeekBar.setProgress(0);
 //                }
-//                mPlayImage.setImageResource(R.drawable.pause_button);
+//                mPlayImage.setImageResource(R.drawable.ic_pause);
 //            }
 //        });
 //
@@ -230,7 +230,7 @@ public class PlayActivity extends AppCompatActivity {
 //                } else {
 //                    mService.shuffle(true);
 //                }
-//                mPlayImage.setImageResource(R.drawable.pause_button);
+//                mPlayImage.setImageResource(R.drawable.ic_pause);
 //            }
 //        });
 //
@@ -262,7 +262,7 @@ public class PlayActivity extends AppCompatActivity {
 ////        Uri uri = ContentUris.withAppendedId(ARTWORK_URI, albumId);
 ////        Picasso.with(PlayActivity.this)
 ////                .load(uri)
-////                .placeholder(R.drawable.track_ablumart_placeholder)
+////                .placeholder(R.drawable.default_album_art)
 ////                .into(mAlbumArtImage);
 //        String songTitle = i.getStringExtra("title");
 //        mAlbumTitle.setText(songTitle);
@@ -272,10 +272,10 @@ public class PlayActivity extends AppCompatActivity {
 //                if (mService.isPlaying()) {
 //                    mService.pause();
 //                    Log.i("PlayActivity", "pause");
-//                    mPlayImage.setImageResource(R.drawable.play);
+//                    mPlayImage.setImageResource(R.drawable.ic_play);
 //                } else {
 //                    mService.resume();
-//                    mPlayImage.setImageResource(R.drawable.pause_button);
+//                    mPlayImage.setImageResource(R.drawable.ic_pause);
 //                    Log.i("PlayActivity", "resume");
 //                }
 //            }
