@@ -107,6 +107,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme_NoActionBar); // transition back from splash screen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         mContext = this;
@@ -160,6 +161,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         Menu menu = navigationView.getMenu();
         mDiscoverMenuItem = menu.findItem(R.id.nav_discover);
         mDisableMenuItem = menu.findItem(R.id.nav_disable);
+        mDisableMenuItem.setEnabled(false);
 
         mAlbumArtImage = (ImageView) findViewById(R.id.floating_player_album_art);
         mSongTitle = (TextView) findViewById(R.id.floating_player_song_name);
@@ -301,18 +303,22 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         mNetworkStatus = networkStatus;
         mNetworkStatusText.setText(networkStatus);
         if (networkStatus.equals("No connection")) {
-            mNetworkStatusImage.setImageResource(R.drawable.ic_signal_wifi_off_black_24dp);
+//            mNetworkStatusImage.setImageResource(R.drawable.ic_signal_wifi_off_black_24dp);
+            mNetworkStatusImage.setVisibility(View.INVISIBLE);
             mDiscoverMenuItem.setEnabled(true);
             mDisableMenuItem.setEnabled(false);
         } else if (networkStatus.equals("Host")) {
+            mNetworkStatusImage.setVisibility(View.VISIBLE);
             mNetworkStatusImage.setImageResource(R.drawable.ic_router_black_24dp);
             mDiscoverMenuItem.setEnabled(false);
             mDisableMenuItem.setEnabled(true);
         } else if (networkStatus.equals("Client")) {
+            mNetworkStatusImage.setVisibility(View.VISIBLE);
             mNetworkStatusImage.setImageResource(R.drawable.ic_speaker_phone_black_24dp);
             mDiscoverMenuItem.setEnabled(false);
             mDisableMenuItem.setEnabled(true);
         } else { // discovering
+            mNetworkStatusImage.setVisibility(View.VISIBLE);
             mNetworkStatusImage.setImageResource(R.drawable.ic_leak_add_black_24dp);
             mDiscoverMenuItem.setEnabled(false);
             mDisableMenuItem.setEnabled(false);
@@ -515,8 +521,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
