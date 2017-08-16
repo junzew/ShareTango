@@ -7,9 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.imran.wali.sharetango.DashboardActivity;
 import com.imran.wali.sharetango.R;
+import com.imran.wali.sharetango.Services.NetworkStatus;
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.IndexableListAdapter;
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.IndexableListView;
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.PullToRefreshIndexableListView;
@@ -38,10 +41,28 @@ public class AvailableSongsFragment extends PagerAdapterTabFragment {
         MusicDataRepository.getInstance().registerAvilableMusicDataFragment(adapter);
     }
 
+    private PullToRefreshBase.OnRefreshListener refreshListener = new PullToRefreshBase.OnRefreshListener() {
+        @Override
+        public void onRefresh(PullToRefreshBase refreshView) {
+            Toast.makeText(mContext, "Refreshing...", Toast.LENGTH_SHORT).show();
+            NetworkStatus networkStatus = mContext.getNetworkStatus();
+            if (networkStatus.equals(NetworkStatus.NO_CONNECTION)) {
+                adapter.clear();
+            }
+            pullToRefreshIndexableListView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    pullToRefreshIndexableListView.onRefreshComplete();
+                }
+            }, 1000);
+        }
+    };
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.indexable_songs_fragment, container, false);
         pullToRefreshIndexableListView =  (PullToRefreshIndexableListView) view.findViewById(R.id.pull_to_refresh_lv);
+        pullToRefreshIndexableListView.setOnRefreshListener(refreshListener);
         listView = pullToRefreshIndexableListView.getRefreshableView();
         listView.setAdapter(adapter);
         listView.setFastScrollEnabled(true);
@@ -75,5 +96,9 @@ public class AvailableSongsFragment extends PagerAdapterTabFragment {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    public void clearSongs() {
+        adapter.clear();
     }
 }

@@ -36,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.imran.wali.sharetango.Services.NetworkStatus;
 import com.imran.wali.sharetango.Services.PlayService;
 import com.imran.wali.sharetango.Services.SalutService;
 import com.imran.wali.sharetango.UI.Fragments.AvailableSongsFragment;
@@ -54,6 +55,9 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.imran.wali.sharetango.Services.NetworkStatus.CLIENT;
+import static com.imran.wali.sharetango.Services.NetworkStatus.HOST;
+import static com.imran.wali.sharetango.Services.NetworkStatus.NO_CONNECTION;
 import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
 import static com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.COLLAPSED;
 import static com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.EXPANDED;
@@ -295,24 +299,29 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
 
 //    private SongFragment mSongFragment = (SongFragment) PagerAdapterTabFragment.newInstance(PagerAdapterTabFragment.PageType.SONG);
-    private String mNetworkStatus = "No connection";
+    private NetworkStatus mNetworkStatus = NO_CONNECTION;
+    public NetworkStatus getNetworkStatus() {
+        return mNetworkStatus;
+    }
     @Override
-    public void update(String networkStatus) {
+    public void update(NetworkStatus networkStatus) {
         // receive data from SalutService
         // TODO
         mNetworkStatus = networkStatus;
-        mNetworkStatusText.setText(networkStatus);
-        if (networkStatus.equals("No connection")) {
+        mNetworkStatusText.setText(networkStatus.toString());
+        if (networkStatus.equals(NO_CONNECTION)) {
 //            mNetworkStatusImage.setImageResource(R.drawable.ic_signal_wifi_off_black_24dp);
             mNetworkStatusImage.setVisibility(View.INVISIBLE);
             mDiscoverMenuItem.setEnabled(true);
             mDisableMenuItem.setEnabled(false);
-        } else if (networkStatus.equals("Host")) {
+            AvailableSongsFragment fragment = (AvailableSongsFragment)slidePagerAdapter.getItem(1);
+            fragment.clearSongs();
+        } else if (networkStatus.equals(HOST)) {
             mNetworkStatusImage.setVisibility(View.VISIBLE);
             mNetworkStatusImage.setImageResource(R.drawable.ic_router_black_24dp);
             mDiscoverMenuItem.setEnabled(false);
             mDisableMenuItem.setEnabled(true);
-        } else if (networkStatus.equals("Client")) {
+        } else if (networkStatus.equals(CLIENT)) {
             mNetworkStatusImage.setVisibility(View.VISIBLE);
             mNetworkStatusImage.setImageResource(R.drawable.ic_speaker_phone_black_24dp);
             mDiscoverMenuItem.setEnabled(false);

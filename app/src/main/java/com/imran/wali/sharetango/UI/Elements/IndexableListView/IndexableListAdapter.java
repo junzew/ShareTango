@@ -199,4 +199,9 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer,
             notifyDataSetChanged();
         }
     }
+
+    public void clear() {
+        this.dataHolder.clear();
+        notifyDataSetChanged();
+    }
 }

@@ -3,7 +3,7 @@
     <item android:drawable="@color/colorPrimary"/>
     <item>
         <bitmap
-            android:src="@drawable/tango"
+            android:src="@drawable/tango144x144"
             android:gravity="center"/>
     </item>
 </layer-list>

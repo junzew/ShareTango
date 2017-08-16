@@ -36,6 +36,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.imran.wali.sharetango.Services.NetworkStatus.CLIENT;
+import static com.imran.wali.sharetango.Services.NetworkStatus.DISCOVERING;
+import static com.imran.wali.sharetango.Services.NetworkStatus.HOST;
+import static com.imran.wali.sharetango.Services.NetworkStatus.NO_CONNECTION;
+
 /**
  * Created by junze on 2017-03-18.
  */
@@ -280,9 +285,7 @@ public class SalutService extends Service implements SalutDataCallback {
         Log.d(TAG, "setting up network...");
         if (!network.isRunningAsHost) {
             // stop host
-            network.disconnectFromDevice();
-            network.forceDisconnect();
-            // TODO use another version here
+            forceStopNetwork();
             network.startNetworkService(new SalutDeviceCallback() {
                 @Override
                 public void call(SalutDevice salutDevice) {
@@ -400,7 +403,7 @@ public class SalutService extends Service implements SalutDataCallback {
 
     // Communicate to activity through this interface
     public interface ISalutCallback {
-        void update(String networkStatus);
+        void update(NetworkStatus networkStatus);
     }
 
     public void request(MusicData song) {
@@ -514,36 +517,63 @@ public class SalutService extends Service implements SalutDataCallback {
             network.stopNetworkService(false, new SalutCallback() {
                 @Override
                 public void call() {
-                   updateClient();
+                    Toast.makeText(getApplicationContext(), "Host stopped", Toast.LENGTH_SHORT).show();
+                    updateClient(NO_CONNECTION);
                 }
-            }, null);
+            }, new SalutCallback() {
+                @Override
+                public void call() {
+                    Toast.makeText(getApplicationContext(), "Failed to stop host; Force stopping...", Toast.LENGTH_SHORT).show();
+                    forceStopNetwork();
+                    updateClient();
+                }
+            });
         } else { // Client or Not connected
             if (network.isConnectedToAnotherDevice) {
-                Toast.makeText(getApplicationContext(), "Leaving network...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Leaving Network...", Toast.LENGTH_SHORT).show();
                 network.unregisterClient(new SalutCallback() {
                     @Override
                     public void call() {
+                        Toast.makeText(getApplicationContext(), "Left Network", Toast.LENGTH_SHORT).show();
+                        updateClient(NO_CONNECTION);
+                    }
+                }, new SalutCallback() {
+                    @Override
+                    public void call() {
+                        Toast.makeText(getApplicationContext(), "Failed to disconnect; Force stopping...", Toast.LENGTH_SHORT).show();
+                        forceStopNetwork();
                         updateClient();
                     }
-                }, null, false);
+                }, false);
             }
         }
     }
 
-    public String networkStatus() {
+    public NetworkStatus networkStatus() {
         if (network.isDiscovering) {
-            return "Discovering...";
+            return DISCOVERING;
         }
         if (network.isRunningAsHost) {
-            return "Host";
+            return HOST;
         } else if (network.isConnectedToAnotherDevice){
-            return "Client";
+            return CLIENT;
         }
-        return "No connection";
+        return NO_CONNECTION;
     }
 
     private void updateClient() {
         ((DashboardActivity)mActivity).update(networkStatus());
+    }
+
+    private void updateClient(NetworkStatus status) {
+        ((DashboardActivity)mActivity).update(status);
+    }
+
+
+    public void forceStopNetwork() {
+        Log.d(TAG, "forceStopNetwork");
+        network.disconnectFromDevice();
+        network.forceDisconnect();
     }
 
 
