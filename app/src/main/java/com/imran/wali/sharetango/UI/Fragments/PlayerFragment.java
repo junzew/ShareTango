@@ -51,6 +51,8 @@ public class PlayerFragment extends Fragment {
     ImageView mAlbumArtImage;
     TextView mAlbumTitle;
     SeekBar mSeekBar;
+    TextView mElapsedTime;
+    TextView mRemainingTime;
     ImageView mPreviousButton;
     ImageView mNextButton;
 
@@ -103,8 +105,8 @@ public class PlayerFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        initViews(view);
         mService = ((DashboardActivity)getActivity()).getPlayService();
+        initViews(view);
     }
 
     @Override
@@ -143,6 +145,17 @@ public class PlayerFragment extends Fragment {
         void onPlayerStatusChange(boolean isPlaying);
     }
 
+    private String formatTime(int min, int sec) {
+        String minString = Integer.toString(min), secString = Integer.toString(sec);
+        if (min < 10) {
+            minString = "0"+ minString;
+        }
+        if (sec < 10) {
+            secString = "0"+ secString;
+        }
+        return minString +":"+secString;
+    }
+
 
     private void initViews(View view) {
         mAlbumArtImage = (ImageView) view.findViewById(R.id.album);
@@ -152,6 +165,9 @@ public class PlayerFragment extends Fragment {
         mPreviousButton = (ImageView) view.findViewById(R.id.previous);
         mNextButton = (ImageView) view.findViewById(R.id.next);
         mRootLayout = (LinearLayout) view.findViewById(R.id.dragView);
+
+        mElapsedTime = (TextView) view.findViewById(R.id.tv_elapsed);
+        mRemainingTime = (TextView) view.findViewById(R.id.tv_remain);
 
         mPreviousButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,6 +247,9 @@ public class PlayerFragment extends Fragment {
                 String songTitle = music.getTitle();
                 mAlbumTitle.setText(songTitle);
                 mAlbumTitle.setSelected(true); // marquee text
+                if (task != null) {
+                    task.cancel(true);
+                }
                 task = new UpdateSeekBarProgressTask();
                 task.execute();
 
@@ -323,6 +342,8 @@ public class PlayerFragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
+            mElapsedTime.setText(formatTime(0, 0));
+            mRemainingTime.setText(formatTime(0, 0));
             mSeekBar.setVisibility(ProgressBar.VISIBLE);
         }
 
@@ -337,6 +358,7 @@ public class PlayerFragment extends Fragment {
                     if (!isSeeking) {
                         publishProgress(p);
                     }
+                    SystemClock.sleep(1000);
                 }
             }
             return "Complete";
@@ -344,10 +366,13 @@ public class PlayerFragment extends Fragment {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            int from = mSeekBar.getProgress();
-            int to = values[0];
-            if (Math.abs(from - to) <= 1)
-                mSeekBar.setProgress(values[0]);
+            mSeekBar.setProgress(values[0]);
+            // set elapsed and remaining time
+            int duration = mService.getDuration() / 1000, current = mService.currentPosition() / 1000, remain = duration - current;
+            int currMin = current / 60, currSec = current % 60;
+            int remMin = remain / 60, remSec = remain % 60;
+            mElapsedTime.setText(formatTime(currMin, currSec));
+            mRemainingTime.setText(formatTime(remMin, remSec));
         }
 
         @Override

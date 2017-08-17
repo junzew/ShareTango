@@ -42,16 +42,6 @@
             android:textColor="@color/song_name"
             android:textSize="18sp" />
 
-        <SeekBar
-            android:id="@+id/progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/song_title"
-            android:layout_marginTop="10dp"
-            android:max="100" />
-
-
 
         <LinearLayout
             android:id="@+id/buttons"
@@ -129,6 +119,44 @@
                 android:progress="100"/>
 
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@+id/song_title"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="3dp"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="00:00"
+                android:textColor="@color/song_name"
+                android:id="@+id/tv_elapsed"/>
+            <SeekBar
+                android:id="@+id/progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:max="100"
+                android:layout_below="@+id/song_title"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="00:00"
+                android:textColor="@color/song_name"
+                android:id="@+id/tv_remain"/>
+
+        </LinearLayout>
+
+
 
     </RelativeLayout>
 

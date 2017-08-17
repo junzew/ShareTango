@@ -55,10 +55,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if (!fromUser) {
-                    playNextOrStop(false);
-                }
-                fromUser = false;
+                playNextOrStop(false);
             }
         });
     }
