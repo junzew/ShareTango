@@ -22,6 +22,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Wali on 18-Jul-15.
@@ -143,7 +144,7 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer,
 
         @Override
         protected ArrayList<MusicData> doInBackground(Void... voids) {
-            ArrayList<MusicData> newMusicData = new ArrayList<>(MusicDataRepository.getInstance().getList());
+            ArrayList<MusicData> newMusicData = new ArrayList<>(MusicDataRepository.getInstance().getLocalSongList());
             indexerHashMap.clear();
             int count = 0;
             Iterator<MusicData> iter = newMusicData.iterator();
@@ -198,6 +199,15 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer,
             this.dataHolder.add(data);
             notifyDataSetChanged();
         }
+    }
+
+    public List<MusicData> getAvailableSongs() {
+        return dataHolder;
+    }
+
+    public void addAll(List<MusicData> songs) {
+        dataHolder.addAll(songs);
+        notifyDataSetChanged();
     }
 
     public void clear() {

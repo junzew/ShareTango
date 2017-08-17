@@ -104,13 +104,15 @@ public class MusicData implements Parcelable{
 
         MusicData musicData = (MusicData) o;
 
-        return id == musicData.id;
+        return id == musicData.id || (title.equals(musicData.title) && artist.equals(musicData.artist));
 
     }
 
     @Override
     public int hashCode() {
-        return (int) (id ^ (id >>> 32));
+        int result = title.hashCode();
+        result = 31 * result + artist.hashCode();
+        return result;
     }
 }
 

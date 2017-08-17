@@ -50,7 +50,7 @@ public class WifiMusicListProvider implements Runnable {
                 Log.d("ShareTango", "Got a client");
                 // TODO: Send List!
                 ObjectOutputStream objectOutput = new ObjectOutputStream(clientSocket.getOutputStream());
-                objectOutput.writeObject(MusicDataRepository.getInstance().getList());
+                objectOutput.writeObject(MusicDataRepository.getInstance().getLocalSongList());
                 clientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();

@@ -46,7 +46,7 @@ public class Packet {
     }
 
     public enum MessageType {
-        SEND_SONG, SEND_SONG_LIST, REQUEST_SONG
+        SEND_SONG, SEND_SONG_LIST, REQUEST_SONG, DISCONNECT
     }
 
     static class MessageTypeConverter extends IntBasedTypeConverter<MessageType> {
@@ -66,6 +66,9 @@ public class Packet {
                     break;
                 case REQUEST_SONG:
                     result = 2;
+                    break;
+                case DISCONNECT:
+                    result = 3;
                     break;
                 default:
                     result = -1;

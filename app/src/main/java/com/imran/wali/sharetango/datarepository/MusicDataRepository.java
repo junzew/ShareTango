@@ -46,14 +46,14 @@ public class MusicDataRepository {
     }
 
     private Context mContext;
-    private ArrayList<MusicData> musicDataList;
+    private ArrayList<MusicData> localMusicDataList;
     private final Object lock;
     private List<MusicDataChangeListener> subscribers;
     private GetSongListAsyncTask getSongListAsyncTask;
 
     private MusicDataRepository(Context c) {
         mContext = c;
-        musicDataList = new ArrayList<>();
+        localMusicDataList = new ArrayList<>();
         lock = new Object();
         subscribers = new ArrayList<>();
     }
@@ -77,9 +77,9 @@ public class MusicDataRepository {
         }
     }
 
-    public ArrayList<MusicData> getList() {
+    public ArrayList<MusicData> getLocalSongList() {
         synchronized (lock) {
-            return musicDataList;
+            return localMusicDataList;
         }
     }
 
@@ -170,8 +170,8 @@ public class MusicDataRepository {
 
             cursor.close();
             synchronized (lock) {
-                musicDataList.clear();
-                musicDataList.addAll(data);
+                localMusicDataList.clear();
+                localMusicDataList.addAll(data);
             }
             return data;
         }
@@ -197,7 +197,18 @@ public class MusicDataRepository {
 
     public void addAvailableMusicData(MusicData data) {
         availableFragmentAdapter.add(data);
-        musicDataList.add(data);
+    }
+
+    public void addAllAvailableMusicData(List<MusicData> songs) {
+        availableFragmentAdapter.addAll(songs);
+    }
+
+    public List<MusicData> getAvailableSongs() {
+        return availableFragmentAdapter.getAvailableSongs();
+    }
+
+    public void clearAvailableSongs() {
+        availableFragmentAdapter.clear();
     }
     private IndexableListAdapter availableFragmentAdapter;
     public void registerAvilableMusicDataFragment(IndexableListAdapter adapter) {

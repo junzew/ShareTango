@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -106,7 +107,7 @@ public class SalutService extends Service implements SalutDataCallback {
         try {
             Packet pkt = LoganSquare.parse((String) data, Packet.class);
             // discard packet if destination device name doesn't match
-            if (pkt.getDstDevice().deviceName.equals(network.thisDevice.deviceName)) {
+//            if (pkt.getDstDevice().deviceName.equals(network.thisDevice.deviceName)) {
                 switch (pkt.getTransactionType()) {
                     case REQUEST_SONG:  // got request for actual song
                         onReceiveRequestForSong(pkt);
@@ -118,14 +119,58 @@ public class SalutService extends Service implements SalutDataCallback {
                         // new available song information
                         onNewSongListReceived(pkt);
                         break;
+                    case DISCONNECT:
+                        onClientDisconnect(pkt);
                     default:
                         break;
                 }
-            }
+//            }
         } catch (IOException ex) {
             ex.printStackTrace();
             Log.e(TAG, "Failed to parse network data.");
         }
+    }
+
+    /**
+     * A client has left the network
+     * */
+    private void onClientDisconnect(Packet pkt) {
+        if (!network.isRunningAsHost) return; // must be host
+        SalutDevice client = pkt.getSrcDevice();
+        // remove songs from map owned by client
+        for(Iterator<Map.Entry<MusicData, String>> it = map.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<MusicData, String> entry = it.next();
+            if(entry.getValue().equals(client.deviceName)) {
+                it.remove();
+            }
+        }
+        broadcastAvailableSongs();
+        // update host's available song list
+        List<MusicData> available = MusicDataRepository.getInstance().getAvailableSongs();
+        List<MusicData> updatedAvailableSongs = new ArrayList<>();
+        for (MusicData song : available) {
+            if (map.containsKey(song)) { // someonw owns the song
+                updatedAvailableSongs.add(song);
+            }
+        }
+        MusicDataRepository.getInstance().clearAvailableSongs();
+        MusicDataRepository.getInstance().addAllAvailableMusicData(updatedAvailableSongs);
+    }
+
+    private void broadcastAvailableSongs() {
+        Packet packet = new Packet();
+        packet.setTransactionType(Packet.MessageType.SEND_SONG_LIST);
+        packet.setSrcDevice(network.thisDevice);
+        List<MusicData> availableSongs = new ArrayList<>();
+        availableSongs.addAll(map.keySet());
+        packet.setSongList(availableSongs);
+        // send all available songs information from host to all devices
+        network.sendToAllDevices(packet, new SalutCallback() {
+            @Override
+            public void call() {
+                Log.e(TAG, "sending song list to ALL devices failed");
+            }
+        });
     }
 
     /**
@@ -243,40 +288,33 @@ public class SalutService extends Service implements SalutDataCallback {
      */
     private void onNewSongListReceived(Packet pkt) {
         Log.d(TAG, "onNewSongListReceived");
-        List<MusicData> songList = pkt.getSongList();
+        List<MusicData> receivedSongList = pkt.getSongList();
         if (network.isRunningAsHost) {
             // Add local songs to map
-            for (MusicData s : MusicDataRepository.getInstance().getList()) {
+            for (MusicData s : MusicDataRepository.getInstance().getLocalSongList()) {
                 if (!map.containsKey(s)) {
                     map.put(s, network.thisDevice.deviceName);
                 }
             }
             // Add new songs to map
-            for (MusicData s : songList) {
-                MusicDataRepository.getInstance().addAvailableMusicData(s);
+            List<MusicData> localSongs = MusicDataRepository.getInstance().getLocalSongList();
+            String srcDeviceName = pkt.getSrcDevice().deviceName;
+            for (MusicData s : receivedSongList) {
+                if (!localSongs.contains(s)) {
+                    MusicDataRepository.getInstance().addAvailableMusicData(s);
+                }
                 if (!map.containsKey(s)) {
-                    map.put(s, pkt.getSrcDevice().deviceName); // store songs' owners info
+                    map.put(s, srcDeviceName); // store songs' owners info
                 }
             }
-            SalutDevice destinationDevice = getDeviceFromName(pkt.getSrcDevice().deviceName);
-            Packet packet = new Packet();
-            packet.setTransactionType(Packet.MessageType.SEND_SONG_LIST);
-            packet.setSrcDevice(network.thisDevice);
-            packet.setDstDevice(pkt.getSrcDevice());
-            List<MusicData> availableSongs = new ArrayList<>();
-            availableSongs.addAll(map.keySet());
-            packet.setSongList(availableSongs);
-            // send all available songs information from host to client
-            network.sendToDevice(destinationDevice, packet, new SalutCallback() {
-                @Override
-                public void call() {
-                    Log.d(TAG, "sending song list to device failed");
-                }
-            });
+            broadcastAvailableSongs();
         } else {
             // if client receives a song list, just update listed available songs
-            for (MusicData s : songList) {
-                MusicDataRepository.getInstance().addAvailableMusicData(s);
+            List<MusicData> localSongs = MusicDataRepository.getInstance().getLocalSongList();
+            for (MusicData s : receivedSongList) {
+                if (!localSongs.contains(s)) { // do not display local songs in available fragment
+                    MusicDataRepository.getInstance().addAvailableMusicData(s);
+                }
             }
         }
     }
@@ -296,20 +334,20 @@ public class SalutService extends Service implements SalutDataCallback {
             }, new SalutCallback() /* on success */ {
                 @Override
                 public void call() {
-                    updateClient();
+                    notifyActivityNetworkStatusChanged();
                     Toast.makeText(getApplicationContext(), "Network created", Toast.LENGTH_SHORT).show();
                 }
             }, new SalutCallback() /* on failure*/ {
                 @Override
                 public void call() {
-                    updateClient();
+                    notifyActivityNetworkStatusChanged();
                     Toast.makeText(getApplicationContext(), "Failed to create network", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
             network.stopNetworkService(false);
         }
-        updateClient();
+        notifyActivityNetworkStatusChanged();
     }
 
     public void isHostServiceAvailable() {
@@ -319,7 +357,7 @@ public class SalutService extends Service implements SalutDataCallback {
             SalutCallback ifHostIsFound = new SalutCallback() {
                 @Override
                 public void call() {
-                    updateClient();
+                    notifyActivityNetworkStatusChanged();
                     Log.d(TAG, "Found Host, Make Connection with Host.");
                     // DEVICE MAINTAINABLE AREA
                     Toast.makeText(getApplicationContext(),
@@ -328,7 +366,7 @@ public class SalutService extends Service implements SalutDataCallback {
                     SalutCallback onRegisterSuccess = new SalutCallback() {
                         @Override
                         public void call() {
-                            updateClient();
+                            notifyActivityNetworkStatusChanged();
                             Log.d(TAG, "REGISTER SUCCESS... SENDING song list to host");
                             Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
                             // TODO send message
@@ -340,7 +378,7 @@ public class SalutService extends Service implements SalutDataCallback {
                     SalutCallback onRegisterFaliure = new SalutCallback() {
                         @Override
                         public void call() {
-                            updateClient();
+                            notifyActivityNetworkStatusChanged();
                             Toast.makeText(getApplicationContext(), "Disconnected", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "WE FUCKED UP");
                         }
@@ -351,7 +389,7 @@ public class SalutService extends Service implements SalutDataCallback {
             SalutCallback ifHostIsNotFound = new SalutCallback() {
                 @Override
                 public void call() {
-                    updateClient();
+                    notifyActivityNetworkStatusChanged();
                     Log.d(TAG, "Host not found, starting service");
                     Toast.makeText(getApplicationContext(), "No host found, setting up network...", Toast.LENGTH_SHORT).show();
                     setupNetwork();
@@ -362,11 +400,11 @@ public class SalutService extends Service implements SalutDataCallback {
         } else {
             network.stopServiceDiscovery(true);
         }
-        updateClient();
+        notifyActivityNetworkStatusChanged();
     }
 
     private void sendSongListToHost() {
-        List<MusicData> localSongList = MusicDataRepository.getInstance().getList();
+        List<MusicData> localSongList = MusicDataRepository.getInstance().getLocalSongList();
         Log.d(TAG, localSongList.toString());
         Packet pkt = new Packet();
 //        // put a 'stamp' on the song title
@@ -518,34 +556,61 @@ public class SalutService extends Service implements SalutDataCallback {
                 @Override
                 public void call() {
                     Toast.makeText(getApplicationContext(), "Host stopped", Toast.LENGTH_SHORT).show();
-                    updateClient(NO_CONNECTION);
+                    notifyActivityNetworkStatusChanged(NO_CONNECTION);
                 }
             }, new SalutCallback() {
                 @Override
                 public void call() {
                     Toast.makeText(getApplicationContext(), "Failed to stop host; Force stopping...", Toast.LENGTH_SHORT).show();
                     forceStopNetwork();
-                    updateClient();
+                    notifyActivityNetworkStatusChanged();
                 }
             });
         } else { // Client or Not connected
             if (network.isConnectedToAnotherDevice) {
+                // send DISCONNECT signal to host
+                Packet pkt = new Packet();
+                pkt.setSrcDevice(network.thisDevice);
+                pkt.setDstDevice(network.registeredHost);
+                pkt.setTransactionType(Packet.MessageType.DISCONNECT);
+                network.sendToHost(pkt, new SalutCallback() {
+                    @Override
+                    public void call() {
+                        Log.e(TAG, "Client Disconnect signal failed to send");
+                    }
+                });
                 Toast.makeText(getApplicationContext(), "Leaving Network...", Toast.LENGTH_SHORT).show();
                 network.unregisterClient(new SalutCallback() {
                     @Override
                     public void call() {
                         Toast.makeText(getApplicationContext(), "Left Network", Toast.LENGTH_SHORT).show();
-                        updateClient(NO_CONNECTION);
+                        notifyActivityNetworkStatusChanged(NO_CONNECTION);
                     }
                 }, new SalutCallback() {
                     @Override
                     public void call() {
                         Toast.makeText(getApplicationContext(), "Failed to disconnect; Force stopping...", Toast.LENGTH_SHORT).show();
                         forceStopNetwork();
-                        updateClient();
+                        notifyActivityNetworkStatusChanged();
                     }
                 }, false);
             }
+        }
+    }
+
+    public List<SalutDevice> getConnectedDivices() {
+        List<SalutDevice> result = null;
+        if (isRunningAsHost()) {
+            result = network.registeredClients;
+        }
+        return result;
+    }
+
+    public boolean isRunningAsHost() {
+        if (network != null) {
+            return network.isRunningAsHost;
+        } else {
+            return false;
         }
     }
 
@@ -561,11 +626,11 @@ public class SalutService extends Service implements SalutDataCallback {
         return NO_CONNECTION;
     }
 
-    private void updateClient() {
+    private void notifyActivityNetworkStatusChanged() {
         ((DashboardActivity)mActivity).update(networkStatus());
     }
 
-    private void updateClient(NetworkStatus status) {
+    private void notifyActivityNetworkStatusChanged(NetworkStatus status) {
         ((DashboardActivity)mActivity).update(status);
     }
 
