@@ -201,6 +201,9 @@ public class PlayerFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(fromUser) {
                     mProgress = progress;
+                    // track position
+                    int time = (mService.getDuration() * mProgress / 100) / 1000;
+                    mElapsedTime.setText(formatTime(time / 60, time % 60));
                 }
             }
 
