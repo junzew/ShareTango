@@ -6,4 +6,19 @@
     <string name="action_settings">Settings</string>
     <string name="permission_dialog_title">Permission needed</string>
     <string name="permission_dialog_message">ShareTango needs read permission in order to play songs on your phone</string>
+
+    <string name="last_update">Last Update: </string>
+    <string name="join_network">Please join a Wi-Fi Direct network first</string>
+
+    <string name="wifi_direct_status">Wi-Fi Direct Status</string>
+    <string name="network">Network</string>
+    <string name="no_connection">No Connection</string>
+    <string name="discovering">Discovering...</string>
+    <string name="host">Host</string>
+    <string name="client">Client</string>
+    <string name="scan">Scan</string>
+    <string name="disable">Disable</string>
+
+    <string name="local_fragment_name">Local</string>
+    <string name="available_fragment_name">Available</string>
 </resources>

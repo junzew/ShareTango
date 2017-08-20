@@ -211,21 +211,43 @@ public class SalutService extends Service implements SalutDataCallback {
      */
     private void onReceiveRequestForSong(Packet pkt) throws IOException {
         Log.d(TAG, "onReceiveRequestForSong");
-        if (network.isRunningAsHost &&
-                !network.thisDevice.deviceName.equals(pkt.getDstDevice().deviceName)) {
-            // forward request
-            request(pkt.getMusicData(), pkt.getSrcDevice());
-            return;
+        LogPacket(pkt);
+
+        if (network.isRunningAsHost) {
+            Log.d(TAG, "Registered clients:" + network.registeredClients.toString());
+            MusicData songToRequest = pkt.getMusicData();
+            String songOwnerDeviceName = map.get(songToRequest);
+            if (songOwnerDeviceName == null) {
+                Log.e(TAG, "Request failed");
+                return;
+            }
+            if (!songOwnerDeviceName.equals(network.thisDevice.deviceName)) {
+                // host is not the song owner then forward request
+                SalutDevice songOwnerDevice = getDeviceFromName(songOwnerDeviceName);
+                pkt.setDstDevice(songOwnerDevice);
+                fixServiceAddress(pkt.getSrcDevice());
+                network.sendToDevice(songOwnerDevice, pkt, new SalutCallback() {
+                    @Override
+                    public void call() {
+                        Log.e(TAG, "Forward request failed");
+                    }
+                });
+                return;
+            }
         }
         // otherwise this is the song owner who received the request for a song
         MusicData songToRequest = pkt.getMusicData();
-        // TODO find songToRequest locally and encode to Base 64
-        // use Cursor/ContentResolver to get the song
         Log.d(TAG, songToRequest.toString());
-        Log.d(TAG, pkt.getDstDevice().deviceName);
 
         Uri uri = Uri.parse("content://media/external/audio/media/" + songToRequest.getId());
-        File file = new File(getRealPathFromURI(mActivity, uri));
+        File file;
+        try {
+            file = new File(getRealPathFromURI(mActivity, uri));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "Request failed");
+            return;
+        }
         String encoded = Base64Utils.toBase64(file);
         SalutDevice clientDevice = pkt.getSrcDevice();
 
@@ -262,6 +284,19 @@ public class SalutService extends Service implements SalutDataCallback {
         }
     }
 
+    private void LogPacket(Packet pkt) {
+        Log.d(TAG, "Packet information:");
+        if (pkt.getSrcDevice() != null) {
+            Log.d(TAG, "    Src device                = "+pkt.getSrcDevice().deviceName);
+            Log.d(TAG, "    Src device serviceAddress = "+pkt.getSrcDevice().serviceAddress);
+        }
+        if (pkt.getDstDevice() != null) {
+            Log.d(TAG, "    Dst device                = "+pkt.getDstDevice().deviceName);
+            Log.d(TAG, "    Dst device serviceAddress = "+pkt.getDstDevice().serviceAddress);
+        }
+        Log.d(TAG, "    Transaction type           =  " + pkt.getTransactionType());
+    }
+
     private void fixServiceAddress(SalutDevice clientDevice) {
         if (clientDevice.serviceAddress == null) {
             if (network.isRunningAsHost) {
@@ -288,6 +323,7 @@ public class SalutService extends Service implements SalutDataCallback {
      */
     private void onNewSongListReceived(Packet pkt) {
         Log.d(TAG, "onNewSongListReceived");
+        LogPacket(pkt);
         List<MusicData> receivedSongList = pkt.getSongList();
         if (network.isRunningAsHost) {
             // Add local songs to map
@@ -446,13 +482,6 @@ public class SalutService extends Service implements SalutDataCallback {
 
     public void request(MusicData song) {
         Toast.makeText(getApplicationContext(), "Downloading...", Toast.LENGTH_LONG).show();
-        request(song, null);
-    }
-    /**
-     * Request a song
-     */
-    public void request(MusicData song, SalutDevice fromDevice) {
-        Log.d(TAG, "request a song");
         if (network.isRunningAsHost) {
             SalutDevice songOwner = getDeviceFromName(map.get(song));
             if (songOwner == null) {
@@ -460,42 +489,19 @@ public class SalutService extends Service implements SalutDataCallback {
                 return;
             }
             Log.d(TAG, "songOwner of "+song.toString() +" is " + songOwner.toString());
-            if (fromDevice != null && songOwner.deviceName.equals(fromDevice.deviceName)) {
-                // the requested song is on the fromDevice
-                Toast.makeText(getApplicationContext(), "Invalid request", Toast.LENGTH_SHORT).show();
-                return;
-            }
             Packet packet = new Packet();
             packet.setTransactionType(Packet.MessageType.REQUEST_SONG); // indicate request for actual song
             packet.setMusicData(song);// the song to request
-            if (fromDevice == null) {
-                packet.setSrcDevice(network.thisDevice);
-                SalutDevice device = getDeviceFromName(network.thisDevice.deviceName);
-                if (device == null) {
-                    Toast.makeText(getApplicationContext(), "Request failed", Toast.LENGTH_SHORT).show();
-                }
-                packet.setSrcDevice(device);
-            } else {
-                packet.setSrcDevice(fromDevice);
-            }
+            packet.setSrcDevice(network.thisDevice);
             packet.setDstDevice(songOwner);
             Log.d("SalutService", "requesting" + song.toString());
-            if (songOwner.deviceName.equals(network.thisDevice.deviceName)) {
-                // send song directly back
-                try {
-                    onReceiveRequestForSong(packet);
-                } catch (IOException e) {
-                    e.printStackTrace();
+            network.sendToDevice(songOwner, packet, new SalutCallback() {
+                @Override
+                public void call() {
+                    Log.d(TAG, "sending request to device failed");
+                    Toast.makeText(getApplicationContext(), "Request song failed", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                network.sendToDevice(songOwner, packet, new SalutCallback() {
-                    @Override
-                    public void call() {
-                        Log.d(TAG, "sending request to device failed");
-                        Toast.makeText(getApplicationContext(), "Request song failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+            });
         } else {
             // let host resolve the request
             Packet pkt = new Packet();

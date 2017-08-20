@@ -3,12 +3,14 @@ package com.imran.wali.sharetango.UI.Fragments;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.imran.wali.sharetango.DashboardActivity;
 import com.imran.wali.sharetango.R;
@@ -44,11 +46,12 @@ public class AvailableSongsFragment extends PagerAdapterTabFragment {
     private PullToRefreshBase.OnRefreshListener refreshListener = new PullToRefreshBase.OnRefreshListener() {
         @Override
         public void onRefresh(PullToRefreshBase refreshView) {
-            Toast.makeText(mContext, "Refreshing...", Toast.LENGTH_SHORT).show();
             NetworkStatus networkStatus = mContext.getNetworkStatus();
             if (networkStatus.equals(NetworkStatus.NO_CONNECTION)) {
                 adapter.clear();
+                Toast.makeText(mContext, getResources().getString(R.string.join_network), Toast.LENGTH_LONG).show();
             }
+            updateLastUpdateLabel();
             pullToRefreshIndexableListView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -58,11 +61,20 @@ public class AvailableSongsFragment extends PagerAdapterTabFragment {
         }
     };
 
+    private void updateLastUpdateLabel() {
+        String label = DateUtils.formatDateTime(mContext,
+                System.currentTimeMillis(),
+                DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+        ILoadingLayout layout = pullToRefreshIndexableListView.getLoadingLayoutProxy();
+        layout.setLastUpdatedLabel(getResources().getString(R.string.last_update) + " " + label);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.indexable_songs_fragment, container, false);
         pullToRefreshIndexableListView =  (PullToRefreshIndexableListView) view.findViewById(R.id.pull_to_refresh_lv);
         pullToRefreshIndexableListView.setOnRefreshListener(refreshListener);
+        updateLastUpdateLabel();
         listView = pullToRefreshIndexableListView.getRefreshableView();
         listView.setAdapter(adapter);
         listView.setFastScrollEnabled(true);

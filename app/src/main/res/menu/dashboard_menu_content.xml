@@ -33,16 +33,16 @@
         <!--</menu>-->
     <!--</item>-->
 
-    <item android:title="Network">
+    <item android:title="@string/network">
         <menu>
             <item
                 android:id="@+id/nav_discover"
                 android:icon="@drawable/ic_perm_scan_wifi_black_24dp"
-                android:title="Scan"/>
+                android:title="@string/scan"/>
             <item
                 android:id="@+id/nav_disable"
                 android:icon="@drawable/ic_signal_wifi_off_black_24dp"
-                android:title="Disable"/>
+                android:title="@string/disable"/>
         </menu>
     </item>
 

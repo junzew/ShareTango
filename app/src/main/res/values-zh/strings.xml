@@ -1,0 +1,17 @@
+<resources>
+
+    <string name="action_settings">设置</string>
+    <string name="last_update">上次更新: </string>
+    <string name="join_network">请先加入Wi-Fi Direct网络</string>
+    <string name="host">群主</string>
+    <string name="client">客户</string>
+    <string name="disable">取消</string>
+    <string name="available_fragment_name">发现</string>
+    <string name="local_fragment_name">本地</string>
+    <string name="discovering">搜索中...</string>
+    <string name="no_connection">未连接</string>
+    <string name="scan">扫描</string>
+    <string name="wifi_direct_status">Wi-Fi直连状态</string>
+    <string name="network">网络</string>
+
+</resources>

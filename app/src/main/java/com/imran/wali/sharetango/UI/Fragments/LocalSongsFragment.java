@@ -3,11 +3,11 @@ package com.imran.wali.sharetango.UI.Fragments;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -31,7 +31,7 @@ public class LocalSongsFragment extends PagerAdapterTabFragment {
     private DashboardActivity mContext;
 
     private IndexableListAdapter adapter;
-    private PullToRefreshIndexableListView pullToRefreshListView;
+    private PullToRefreshIndexableListView pullToRefreshIndexableListView;
     IndexableListView listView;
 
     @Override
@@ -47,15 +47,16 @@ public class LocalSongsFragment extends PagerAdapterTabFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.indexable_songs_fragment, container, false);
 
-        pullToRefreshListView = (PullToRefreshIndexableListView) view.findViewById(R.id.pull_to_refresh_lv);
-        pullToRefreshListView.setOnRefreshListener(refreshListener);
-        ILoadingLayout layout = pullToRefreshListView.getLoadingLayoutProxy();
+        pullToRefreshIndexableListView = (PullToRefreshIndexableListView) view.findViewById(R.id.pull_to_refresh_lv);
+        pullToRefreshIndexableListView.setOnRefreshListener(refreshListener);
+//        ILoadingLayout layout = pullToRefreshIndexableListView.getLoadingLayoutProxy();
         // set header texts here
 //        layout.setPullLabel("1");
 //        layout.setLastUpdatedLabel("2");
 //        layout.setRefreshingLabel("3");
 //        layout.setReleaseLabel("4");
-        listView = pullToRefreshListView.getRefreshableView();
+        updateLastUpdateLabel();
+        listView = pullToRefreshIndexableListView.getRefreshableView();
 
         listView.setFastScrollEnabled(true); // must come before setting adapter
         listView.setAdapter(adapter);
@@ -95,16 +96,24 @@ public class LocalSongsFragment extends PagerAdapterTabFragment {
     private PullToRefreshBase.OnRefreshListener refreshListener = new PullToRefreshBase.OnRefreshListener() {
         @Override
         public void onRefresh(PullToRefreshBase refreshView) {
-            Toast.makeText(mContext, "Refreshing...", Toast.LENGTH_SHORT).show();
             MusicDataRepository.getInstance().refreshList();
-            pullToRefreshListView.postDelayed(new Runnable() {
+            updateLastUpdateLabel();
+            pullToRefreshIndexableListView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    pullToRefreshListView.onRefreshComplete();
+                    pullToRefreshIndexableListView.onRefreshComplete();
                 }
             }, 1000);
         }
     };
+
+    private void updateLastUpdateLabel() {
+        String label = DateUtils.formatDateTime(mContext,
+                System.currentTimeMillis(),
+                DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+        ILoadingLayout layout = pullToRefreshIndexableListView.getLoadingLayoutProxy();
+        layout.setLastUpdatedLabel(getResources().getString(R.string.last_update)+" "+ label);
+    }
 
     @Override
     public void onResume() {

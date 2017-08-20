@@ -308,7 +308,23 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         // receive data from SalutService
         // TODO
         mNetworkStatus = networkStatus;
-        mNetworkStatusText.setText(networkStatus.toString());
+        String text = "";
+        switch (networkStatus) {
+            case DISCOVERING:
+                text = getResources().getString(R.string.discovering);
+                break;
+            case HOST:
+                text = getResources().getString(R.string.host);
+                break;
+            case CLIENT:
+                text = getResources().getString(R.string.client);
+                break;
+            case NO_CONNECTION:
+                text = getResources().getString(R.string.no_connection);
+                break;
+        }
+        mNetworkStatusText.setText(text);
+
         if (networkStatus.equals(NO_CONNECTION)) {
 //            mNetworkStatusImage.setImageResource(R.drawable.ic_signal_wifi_off_black_24dp);
             mNetworkStatusImage.setVisibility(View.INVISIBLE);
@@ -380,7 +396,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 //        final int PAGE_COUNT = 3;
 //        private String tabTitles[] = new String[]{"Available", "Downloaded", "Local"}; // Fix this
         final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[]{"Local", "Available"}; // Fix this
+        private String tabTitles[] = new String[]{
+                getResources().getString(R.string.local_fragment_name),
+                getResources().getString(R.string.available_fragment_name)
+        }; // Fix this
         private ArrayList<Fragment> fragmentList;
 
         ScreenSlidePagerAdapter(FragmentManager fm) {
@@ -423,73 +442,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             return tabTitles[position];
         }
     }
-
-    /* Wifi Direct Controls */
-
-    //Discover Peer Async
-//    private class DiscoverPeerAsyncTask extends AsyncTask<Void, Void, Void> {
-//        @Override
-//        protected Void doInBackground(Void... voids) {
-//            mWifiDirectManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
-//                @Override
-//                public void onSuccess() {
-//                    Toast.makeText(DashboardActivity.this, "Discovery Initiated", Toast.LENGTH_SHORT).show();
-//                }
-//
-//                @Override
-//                public void onFailure(int reasonCode) {
-//                    Toast.makeText(DashboardActivity.this, "Discovery Failed : " + reasonCode, Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//            return null;
-//        }
-//    }
-
-//    private class PeerHandlingAsyncTask extends AsyncTask<Object, Void, Void> {
-//
-//        @Override
-//        protected Void doInBackground(Object... params) {
-//            Collection<WifiP2pDevice> deviceList = (Collection<WifiP2pDevice>) params[0];
-//            // Get Devices To Remove
-//            ArrayList<WifiP2pDevice> devicesToRemove = wifiClientRepository.getListOfDevicesToRemove(deviceList);
-//            // Get Devices to Add
-//            //ArrayList<WifiP2pDevice> devicesToAdd = wifiClientRepository.getListOfDevicesToAdd(deviceList);
-//            // Add new DeviceList to Repository
-//            wifiClientRepository.setActiveList(deviceList);
-//            // Remove Songs from Available for "devicesToRemove" peers
-//            // TODO: Remove this!
-//            // For each peer, ask for their music data
-//            //for(WifiP2pDevice device : wifiClientRepository.getActiveList()){
-//            if (!wifiClientRepository.getActiveList().isEmpty()) {
-//                WifiP2pConfig config = new WifiP2pConfig();
-//                config.deviceAddress = wifiClientRepository.getActiveList().get(0).deviceAddress;
-//                config.wps.setup = WpsInfo.PBC;
-//                mWifiDirectManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
-//
-//                    @Override
-//                    public void onSuccess() {
-//                        Toast.makeText(DashboardActivity.this, "Connect Success. ",
-//                                Toast.LENGTH_SHORT).show();
-//                        // WiFiDirectBroadcastReceiver will notify us. Ignore for now.
-//                    }
-//
-//                    @Override
-//                    public void onFailure(int reason) {
-//                        Toast.makeText(DashboardActivity.this, "Connect failed. Retry.",
-//                                Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//            }
-//
-//            //}
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Void v) {
-//
-//        }
-//    }
 
 
     /* Menu Control Overrides */

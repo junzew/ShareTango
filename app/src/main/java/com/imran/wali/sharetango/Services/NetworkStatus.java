@@ -5,19 +5,8 @@ package com.imran.wali.sharetango.Services;
  */
 
 public enum NetworkStatus {
-    DISCOVERING("Discovering..."),
-    HOST("Host"),
-    CLIENT("Client"),
-    NO_CONNECTION("No connection");
-
-    private String status;
-
-    NetworkStatus(String status) {
-        this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return status;
-    }
+    DISCOVERING,
+    HOST,
+    CLIENT,
+    NO_CONNECTION
 }
