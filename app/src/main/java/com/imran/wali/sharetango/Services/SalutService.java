@@ -106,6 +106,7 @@ public class SalutService extends Service implements SalutDataCallback {
         Log.d(TAG, data.toString());
         try {
             Packet pkt = LoganSquare.parse((String) data, Packet.class);
+            LogPacket(pkt);
             // discard packet if destination device name doesn't match
 //            if (pkt.getDstDevice().deviceName.equals(network.thisDevice.deviceName)) {
                 switch (pkt.getTransactionType()) {
@@ -211,7 +212,6 @@ public class SalutService extends Service implements SalutDataCallback {
      */
     private void onReceiveRequestForSong(Packet pkt) throws IOException {
         Log.d(TAG, "onReceiveRequestForSong");
-        LogPacket(pkt);
 
         if (network.isRunningAsHost) {
             Log.d(TAG, "Registered clients:" + network.registeredClients.toString());
@@ -294,7 +294,7 @@ public class SalutService extends Service implements SalutDataCallback {
             Log.d(TAG, "    Dst device                = "+pkt.getDstDevice().deviceName);
             Log.d(TAG, "    Dst device serviceAddress = "+pkt.getDstDevice().serviceAddress);
         }
-        Log.d(TAG, "    Transaction type           =  " + pkt.getTransactionType());
+        Log.d(TAG, "    Transaction type          =  " + pkt.getTransactionType());
     }
 
     private void fixServiceAddress(SalutDevice clientDevice) {
@@ -323,7 +323,6 @@ public class SalutService extends Service implements SalutDataCallback {
      */
     private void onNewSongListReceived(Packet pkt) {
         Log.d(TAG, "onNewSongListReceived");
-        LogPacket(pkt);
         List<MusicData> receivedSongList = pkt.getSongList();
         if (network.isRunningAsHost) {
             // Add local songs to map
@@ -347,6 +346,7 @@ public class SalutService extends Service implements SalutDataCallback {
         } else {
             // if client receives a song list, just update listed available songs
             List<MusicData> localSongs = MusicDataRepository.getInstance().getLocalSongList();
+            MusicDataRepository.getInstance().clearAvailableSongs();
             for (MusicData s : receivedSongList) {
                 if (!localSongs.contains(s)) { // do not display local songs in available fragment
                     MusicDataRepository.getInstance().addAvailableMusicData(s);
