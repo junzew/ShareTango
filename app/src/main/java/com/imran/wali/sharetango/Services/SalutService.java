@@ -255,6 +255,7 @@ public class SalutService extends Service implements SalutDataCallback {
         fixServiceAddress(clientDevice);
 
         Packet response = new Packet();
+        songToRequest.prepareCoverArtForSending(mActivity);
         response.setMusicData(songToRequest);
         response.setTransactionType(Packet.MessageType.SEND_SONG);
         response.setBase64string(encoded);

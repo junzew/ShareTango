@@ -130,13 +130,13 @@ public class IndexableListAdapter extends BaseAdapter implements SectionIndexer,
     }
 
     @Override
-    public void onRefreshStart() {}
+    public void onMusicDataRefreshStart() {}
 
     @Override
-    public void onProgressChanged(int progress) {}
+    public void onMusicDataScanProgressChanged(int progress) {}
 
     @Override
-    public void onComplete() {
+    public void onMusicDataScanComplete() {
         new FilterTask().execute();
     }
 

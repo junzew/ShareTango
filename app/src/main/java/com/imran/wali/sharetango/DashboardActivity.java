@@ -1,6 +1,7 @@
 package com.imran.wali.sharetango;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentUris;
@@ -62,7 +63,7 @@ import static com.imran.wali.sharetango.UI.Fragments.AlbumFragment.ARTWORK_URI;
 import static com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.COLLAPSED;
 import static com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.EXPANDED;
 
-public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SalutService.ISalutCallback, SlidingUpPanelLayout.PanelSlideListener, PlayerFragment.OnPlayerStatusChangeListener {
+public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SalutService.ISalutCallback, SlidingUpPanelLayout.PanelSlideListener, PlayerFragment.OnPlayerStatusChangeListener, MusicDataRepository.MusicDataChangeListener {
 
     Context mContext;
     private SalutService mSalutService;
@@ -228,6 +229,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
         bindSalutService();
         Log.d("DASHBOARD", "bind service salut");
+
+        MusicDataRepository.getInstance().addSubscriber(this);
     }
 
     private void startSalutService() {
@@ -384,6 +387,34 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             mPlayButton.setImageResource(R.drawable.ic_pause);
         } else {
             mPlayButton.setImageResource(R.drawable.ic_play);
+        }
+    }
+
+    @Override
+    public void onMusicDataRefreshStart() {
+        if (!isInitialized) {
+            dialog = new ProgressDialog(this);
+            dialog.setTitle("Scanning music...");
+            dialog.setMessage("Please wait...");
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setIndeterminate(true);
+            dialog.show();
+        }
+    }
+
+    private ProgressDialog dialog;
+    private boolean isInitialized = false; // only display dialog at init
+    @Override
+    public void onMusicDataScanProgressChanged(int progress) {
+//        if (dialog != null)
+//            dialog.setProgress(progress);
+    }
+
+    @Override
+    public void onMusicDataScanComplete() {
+        if (!isInitialized && dialog.isShowing()) {
+            dialog.dismiss();
+            isInitialized = true;
         }
     }
 

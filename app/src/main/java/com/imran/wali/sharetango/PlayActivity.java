@@ -169,7 +169,7 @@ public class PlayActivity extends AppCompatActivity {
 //        mVolumeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 //
 //            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//            public void onMusicDataScanProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 //                // progress is the user input
 //                if (fromUser) {
 //                    // if user is updating the volume, then change mProgress
@@ -238,7 +238,7 @@ public class PlayActivity extends AppCompatActivity {
 //            int mProgress = 0;
 //
 //            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//            public void onMusicDataScanProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 //                if (fromUser) {
 //                    mProgress = progress;
 //                }

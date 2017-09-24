@@ -4,18 +4,13 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 
-import com.imran.wali.sharetango.R;
 import com.imran.wali.sharetango.UI.Elements.IndexableListView.IndexableListAdapter;
-import com.imran.wali.sharetango.Utility.Base64Utils;
 import com.imran.wali.sharetango.audiomanager.MusicData;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +22,11 @@ public class MusicDataRepository {
 
     public interface MusicDataChangeListener {
 
-        void onRefreshStart();
+        void onMusicDataRefreshStart();
 
-        void onProgressChanged(int progress);
+        void onMusicDataScanProgressChanged(int progress);
 
-        void onComplete();
+        void onMusicDataScanComplete();
     }
 
     private static MusicDataRepository INSTANCE;
@@ -95,7 +90,7 @@ public class MusicDataRepository {
         protected void onPreExecute() {
             for (MusicDataChangeListener subscriber : subscribers) {
                 if (subscriber != null)
-                    subscriber.onRefreshStart();
+                    subscriber.onMusicDataRefreshStart();
             }
         }
 
@@ -128,12 +123,11 @@ public class MusicDataRepository {
                 return data;
             }
             cursor.moveToFirst();
-            publishProgress(50);
+            publishProgress(0);
 
             // Build List
             int numberOfSongs = cursor.getCount();
-            double progressInterval = numberOfSongs / 50;
-            int currentProgress = 50;
+            int currentProgress = 0;
             for (int i = 1; i < numberOfSongs + 1; i++) {
                 cursor.moveToPosition(i - 1);
                 MusicData musicData = new MusicData();
@@ -149,22 +143,12 @@ public class MusicDataRepository {
                 Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
                 Uri uri = ContentUris.withAppendedId(sArtworkUri, musicData.albumId);
                 musicData.albumArtURIString = uri.toString();
-                Bitmap bitmap;
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
-                    musicData.encodedBitmapString = Base64Utils.encodeBitmap(bitmap);
-                } catch(FileNotFoundException fnfe) {
-                    bitmap = BitmapFactory.decodeResource(mContext.getResources(),
-                            R.drawable.default_album_art);
-                    musicData.encodedBitmapString = Base64Utils.encodeBitmap(bitmap);
-                    fnfe.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
                 data.add(musicData);
-                if (i % progressInterval == 0) {
-                    publishProgress(currentProgress++);
+
+                int progress = (int) ((double) i / numberOfSongs) * 100;
+                if (progress > currentProgress) {
+                    publishProgress(progress);
+                    currentProgress++;
                 }
             }
 
@@ -181,7 +165,7 @@ public class MusicDataRepository {
         protected void onProgressUpdate(Integer... values) {
             for (MusicDataChangeListener subscriber : subscribers) {
                 if (subscriber != null)
-                    subscriber.onProgressChanged(values[0]);
+                    subscriber.onMusicDataScanProgressChanged(values[0]);
             }
         }
 
@@ -189,7 +173,7 @@ public class MusicDataRepository {
         protected void onPostExecute(ArrayList<MusicData> list) {
             for (MusicDataChangeListener subscriber : subscribers) {
                 if (subscriber != null)
-                    subscriber.onComplete();
+                    subscriber.onMusicDataScanComplete();
             }
         }
     }

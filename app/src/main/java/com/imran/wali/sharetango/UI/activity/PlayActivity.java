@@ -160,7 +160,7 @@ public class PlayActivity extends AppCompatActivity {
 //        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 //            int mProgress = 0;
 //            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//            public void onMusicDataScanProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 //                if(fromUser) {
 //                    mProgress = progress;
 //                }

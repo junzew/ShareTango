@@ -1,11 +1,19 @@
 package com.imran.wali.sharetango.audiomanager;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.imran.wali.sharetango.R;
+import com.imran.wali.sharetango.Utility.Base64Utils;
+
+import java.io.FileNotFoundException;
 
 /**
  * Created by Wali on 19-Jul-15.
@@ -22,6 +30,7 @@ public class MusicData implements Parcelable{
     @JsonField public String duration;
     @JsonField public long id;
     @JsonField public long albumId;
+    // Base 64 encoded bitmap for cover art, only set before transferring data
     @JsonField public String encodedBitmapString;
 
     public MusicData() {};
@@ -113,6 +122,22 @@ public class MusicData implements Parcelable{
         int result = title.hashCode();
         result = 31 * result + artist.hashCode();
         return result;
+    }
+
+    public void prepareCoverArtForSending(Context context) {
+        Bitmap bitmap;
+        try {
+            Uri uri = Uri.parse(albumArtURIString);
+            bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
+            this.encodedBitmapString = Base64Utils.encodeBitmap(bitmap);
+        } catch(FileNotFoundException fnfe) {
+            bitmap = BitmapFactory.decodeResource(context.getResources(),
+                    R.drawable.default_album_art);
+            this.encodedBitmapString = Base64Utils.encodeBitmap(bitmap);
+            fnfe.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 
