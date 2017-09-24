@@ -7,7 +7,7 @@ P2P music sharing Android app
 
 Requires Android 5.0+
 
-# ScreenShots
+# Screenshots
 
 <table>
 <tr>
