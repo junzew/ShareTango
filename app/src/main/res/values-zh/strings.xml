@@ -13,5 +13,10 @@
     <string name="scan">扫描</string>
     <string name="wifi_direct_status">Wi-Fi直连状态</string>
     <string name="network">网络</string>
+    <string name="app_name">ShareTango</string>
+    <string name="navigation_drawer_close">关闭</string>
+    <string name="navigation_drawer_open">打开</string>
+    <string name="permission_dialog_message">需要权限</string>
+    <string name="permission_dialog_title">需要权限</string>
 
 </resources>
