@@ -16,3 +16,7 @@ Requires Android 5.0+
 <td><img width="200px" src="https://github.com/junzew/ShareTango/raw/features-junze/screenshots/device-2017-08-20-175836.png" /></td>
 </tr>
 </table>
+
+# Why the name?
+See https://dota2.gamepedia.com/Tango_(Shared)
+
